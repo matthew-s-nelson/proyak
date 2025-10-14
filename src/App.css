@@ -30,7 +30,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 0;
+  padding: 1.5rem 0; /* increased vertical padding for more breathing room in the header */
 }
 
 .logo {
@@ -41,9 +41,19 @@ body {
 }
 
 .logo img {
-  height: 40px;
+  height: 48px; /* slightly larger header logo for better balance with increased padding */
   width: auto;
-  margin-right: 10px;
+  margin-right: 12px;
+}
+
+/* Make the logo in the hero section smaller than the default image
+   (this targets the <img> inside the hero's <h1> and keeps the
+   header/nav logo unaffected) */
+.hero h1 img {
+  height: 140px; /* adjust this value to make it smaller/larger */
+  width: auto;
+  vertical-align: middle;
+  margin-right: 12px;
 }
 
 .logo-text {
@@ -89,6 +99,13 @@ body {
   color: white;
   padding: 8rem 0 4rem;
   text-align: center;
+}
+
+.hero .embedded-form-container {
+  margin-top: 3rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .hero h1 {
@@ -490,7 +507,7 @@ footer {
   }
 
   .logo img {
-    height: 35px;
+    height: 40px; /* increase mobile logo slightly to keep proportions */
   }
 
   .logo-text {

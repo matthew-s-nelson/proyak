@@ -3,7 +3,6 @@ import Hero from './components/Hero'
 import Features from './components/Features'
 import HowItWorks from './components/HowItWorks'
 import UpdatesSection from './components/UpdatesSection'
-import SignupFormSection from './components/SignupFormSection'
 import Footer from './components/Footer'
 import { useSmoothScroll } from './hooks/useSmoothScroll'
 import './App.css'
@@ -18,7 +17,6 @@ function App() {
       <Features />
       <HowItWorks />
       <UpdatesSection />
-      <SignupFormSection />
       <Footer />
     </div>
   )

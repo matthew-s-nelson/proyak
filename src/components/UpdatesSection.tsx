@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Bell, BarChart3, Lightbulb } from 'lucide-react';
+import { Bell, Lightbulb } from 'lucide-react';
 
 interface UpdateBenefitProps {
   icon: React.ReactNode;
@@ -37,8 +37,8 @@ const UpdatesSection: React.FC = () => {
       description: "Get notified when our beta is ready and be among the first to try Proyak"
     },
     {
-      icon: <BarChart3 size={32} color="white" />,
-      title: "Development Updates",
+      icon: <span style={{ fontSize: '32px' }}>🙏</span>,
+      title: "Development Updates", 
       description: "See our progress and learn about new features as we build them"
     },
     {
