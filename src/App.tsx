@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { HashRouter as Router, Routes, Route } from 'react-router-dom'
 import Header from './components/Header'
 import Hero from './components/Hero'
 import Features from './components/Features'
@@ -35,7 +35,7 @@ function App() {
     return () => window.removeEventListener('resize', setBodyPadding);
   }, []);
   return (
-    <BrowserRouter>
+    <Router>
       <div className="App">
         <Header />
 
@@ -52,7 +52,7 @@ function App() {
 
         <Footer />
       </div>
-    </BrowserRouter>
+    </Router>
   )
 }
 
