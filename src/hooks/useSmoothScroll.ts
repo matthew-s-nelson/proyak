@@ -2,25 +2,7 @@ import { useEffect } from 'react';
 
 export const useSmoothScroll = () => {
   useEffect(() => {
-    const handleSmoothScroll = (e: Event) => {
-      const target = e.target as HTMLAnchorElement;
-      
-      if (target.tagName === 'A' && target.getAttribute('href')?.startsWith('#')) {
-        e.preventDefault();
-        const targetId = target.getAttribute('href')?.substring(1);
-        const targetElement = targetId ? document.getElementById(targetId) : null;
-        
-        if (targetElement) {
-          targetElement.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
-          });
-        }
-      }
-    };
-
-    // Add event listener for smooth scrolling
-    document.addEventListener('click', handleSmoothScroll);
+    // We no longer intercept clicks for routing. React Router handles navigation.
 
     // Add scroll effect to header
     const handleHeaderScroll = () => {
@@ -40,7 +22,6 @@ export const useSmoothScroll = () => {
 
     // Cleanup
     return () => {
-      document.removeEventListener('click', handleSmoothScroll);
       window.removeEventListener('scroll', handleHeaderScroll);
     };
   }, []);
