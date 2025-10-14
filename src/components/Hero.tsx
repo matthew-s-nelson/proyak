@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import logoImage from '/logo.png';
 
 const Hero: React.FC = () => {
   const [formLoaded, setFormLoaded] = useState(false);
@@ -15,7 +16,7 @@ const Hero: React.FC = () => {
     <section className="hero" id="validate">
       <div className="container">
         <h1>
-          <img src="/logo.png" alt="Proyak Logo" />
+          <img src={logoImage} alt="Proyak Logo" />
           Proyak is Coming Soon
         </h1>
         <p>

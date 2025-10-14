@@ -1,11 +1,12 @@
 import React from 'react';
+import logoImage from '/logo.png';
 
 const Header: React.FC = () => {
   return (
     <header className="header">
       <nav className="container">
         <a href="#" className="logo">
-          <img src="/logo.png" alt="Proyak Logo" />
+          <img src={logoImage} alt="Proyak Logo" />
         </a>
         <ul className="nav-links">
           <li><a href="#features">Features</a></li>
