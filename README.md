@@ -10,5 +10,5 @@
 ## Other Tips
 - Run `npm run lint` before pushing your code. The GitHub actions workflow will fail if there's
 any linting errors.
-- Check out the `README.md` in the scripts directory to learn how to do run the script to deploy the
-edge functions to Supabase from the command line.
+- Check out the `README.md` in the scripts directory to learn how to do run the script to deploy the edge functions to Supabase from the command line.
+   - Note: I also added a GitHub action to deploy the edge functions. You just have to push your commits and then manually run the `Deploy Function` workflow.
