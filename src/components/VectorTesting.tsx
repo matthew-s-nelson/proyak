@@ -8,11 +8,10 @@ interface Specialty {
 
 const VectorTesting: React.FC = () => {
   const [specialties, setSpecialties] = useState<Specialty[]>([]);
-  const [selectedSpecialty, setSelectedSpecialty] = React.useState<string>('');
+  // const [selectedSpecialty, setSelectedSpecialty] = React.useState<string>('');
 
   useEffect(() => {
     // Fetch specialties from the backend API
-    // TODO: figure out API keys for github actions
     const fetchSpecialties = async () => {
       try {
         const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
