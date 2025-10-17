@@ -25,3 +25,4 @@ dist-ssr
 
 config.json
 /EmbeddingScript/__pycache__/
+.env
