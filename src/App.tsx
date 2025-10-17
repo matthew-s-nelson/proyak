@@ -10,6 +10,7 @@ import EmployerDashboard from './components/EmployerDashboard'
 import MeritScore from './components/MeritScore'
 import CandidateList from './components/CandidateList'
 import './App.css'
+import VectorTesting from './components/VectorTesting'
 
 function HomePage() {
   return (
@@ -46,6 +47,7 @@ function App() {
               <Route path="/how-it-works" element={<HowItWorks />} />
               <Route path="/employer" element={<EmployerDashboard />} />
               <Route path="/candidates" element={<CandidateList />} />
+              <Route path="/testing" element={<VectorTesting />} />
               <Route path="*" element={<HomePage />} />
           </Routes>
         </main>
