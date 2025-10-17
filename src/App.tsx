@@ -12,6 +12,7 @@ import CandidateList from './components/CandidateList'
 import './App.css'
 import VectorTesting from './components/VectorTesting'
 import Register from './components/auth/Register'
+import SetupProfile from './components/SetupProfile'
 
 function HomePage() {
   return (
@@ -50,6 +51,7 @@ function App() {
               <Route path="/candidates" element={<CandidateList />} />
               <Route path="/testing" element={<VectorTesting />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/setup-profile" element={<SetupProfile />} />
               <Route path="*" element={<HomePage />} />
           </Routes>
         </main>

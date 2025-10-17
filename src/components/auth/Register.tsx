@@ -48,9 +48,10 @@ const Register: React.FC = () => {
         email: formData.email,
         password: formData.password,
         options: {
+          emailRedirectTo: `${window.location.origin}/#/setup-profile`,
           data: {
             full_name: formData.name,
-          }
+          },
         }
       });
 
@@ -89,23 +90,9 @@ const Register: React.FC = () => {
         }}>
           <div style={{ fontSize: '48px', marginBottom: '1rem' }}>✅</div>
           <h2 style={{ color: '#22c55e', marginBottom: '1rem' }}>Registration Successful!</h2>
-          <p style={{ color: '#666', marginBottom: '1.5rem' }}>
-            Please check your email for a confirmation link to activate your account.
+          <p style={{ color: '#666' }}>
+            Please check your email for a confirmation link to activate and finishing setting up your account.
           </p>
-          <button
-            onClick={() => setSuccess(false)}
-            style={{
-              backgroundColor: '#3b82f6',
-              color: 'white',
-              border: 'none',
-              padding: '0.75rem 1.5rem',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              fontSize: '16px'
-            }}
-          >
-            Register Another User
-          </button>
         </div>
       </div>
     );
