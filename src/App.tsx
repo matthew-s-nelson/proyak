@@ -11,6 +11,7 @@ import MeritScore from './components/MeritScore'
 import CandidateList from './components/CandidateList'
 import './App.css'
 import VectorTesting from './components/VectorTesting'
+import Register from './components/auth/Register'
 
 function HomePage() {
   return (
@@ -48,6 +49,7 @@ function App() {
               <Route path="/employer" element={<EmployerDashboard />} />
               <Route path="/candidates" element={<CandidateList />} />
               <Route path="/testing" element={<VectorTesting />} />
+              <Route path="/register" element={<Register />} />
               <Route path="*" element={<HomePage />} />
           </Routes>
         </main>
