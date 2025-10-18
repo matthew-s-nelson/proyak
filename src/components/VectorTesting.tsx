@@ -20,6 +20,7 @@ const VectorTesting: React.FC = () => {
   const [selectedSpecialty, setSelectedSpecialty] = React.useState<string>('');
   const [similarSpecialties, setSimilarSpecialties] = React.useState<Specialty[]>([]);
   const [selectedInterest, setSelectedInterest] = React.useState<Interest | null>(null);
+  const [similarInterests, setSimilarInterests] = React.useState<Interest[]>([]);
 
   useEffect(() => {
     // Fetch specialties from the backend API
@@ -67,6 +68,34 @@ const VectorTesting: React.FC = () => {
 
     getSimilarSpecialties();
   }, [selectedSpecialty]);
+
+  useEffect(() => {
+    const getSimilarInterests = async () => {
+      if (!selectedInterest) {
+        setSimilarInterests([]);
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase.functions.invoke('get-similar-interests', {
+          body: {
+            input_name: selectedInterest.name,
+            num_rows: NUM_ROWS
+          }
+        });
+
+        if (error) {
+          console.error('Failed to get similar interests:', error);
+        } else {
+          setSimilarInterests((data ?? []) as Interest[]);
+        }
+      } catch (err) {
+        console.error('Error calling get-similar-interests function:', err);
+      }
+    }
+
+    getSimilarInterests();
+  }, [selectedInterest]);
 
   const handleSpecialtySelect = (specialty: Specialty) => {
     setSelectedSpecialty(specialty.name);
@@ -124,6 +153,17 @@ const VectorTesting: React.FC = () => {
             <ul>
               {similarSpecialties.map((specialty, index) => (
                 <li key={index}>{index+1}. {specialty.name}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {similarInterests.length > 0 && (
+          <div>
+            <h2>Similar Interests to "{selectedInterest?.name}":</h2>
+            <ul>
+              {similarInterests.map((interest, index) => (
+                <li key={index}>{index+1}. {interest.name}</li>
               ))}
             </ul>
           </div>
