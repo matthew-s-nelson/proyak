@@ -9,7 +9,7 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ 
   children, 
-  redirectTo = '/register' 
+  redirectTo = '/login' 
 }) => {
   const { session, loading } = useAuth()
 
