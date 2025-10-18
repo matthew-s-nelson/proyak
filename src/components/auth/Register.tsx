@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '../../lib/supabase';
 
 const Register: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -10,10 +10,6 @@ const Register: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
-
-  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-  const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-  const supabase = createClient(supabaseUrl, supabaseKey);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -63,8 +59,8 @@ const Register: React.FC = () => {
         setSuccess(true);
         setFormData({ name: '', email: '', password: '' });
       }
-    } catch (err: any) {
-      setError(err.message || 'An error occurred during registration');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'An error occurred during registration');
     } finally {
       setIsLoading(false);
     }

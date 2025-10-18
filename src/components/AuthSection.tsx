@@ -5,30 +5,6 @@ import { useAuth } from '../contexts/AuthContext';
 const AuthSection: React.FC = () => {
   const { user, signOut } = useAuth();
 
-  // Get user's name from metadata, or extract from email, or fallback to email
-  const getUserDisplayName = () => {
-    if (!user) return '';
-    
-    // Check if name is in user metadata
-    if (user.user_metadata?.full_name) {
-      return user.user_metadata.full_name;
-    }
-    if (user.user_metadata?.name) {
-      return user.user_metadata.name;
-    }
-    
-    // Extract name from email (part before @)
-    if (user.email) {
-      const emailName = user.email.split('@')[0];
-      // Capitalize first letter and replace dots/underscores with spaces
-      return emailName
-        .replace(/[._]/g, ' ')
-        .replace(/\b\w/g, l => l.toUpperCase());
-    }
-    
-    return 'User';
-  };
-
   if (user) {
     return (
       <div className="auth-section" style={{

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { createClient } from '@supabase/supabase-js'
+import { supabase } from '../lib/supabase'
 import SpecialtySearch from './specialty/SpecialtySearch'
 
 interface Specialty {
@@ -13,18 +13,11 @@ const VectorTesting: React.FC = () => {
   const [specialties, setSpecialties] = useState<Specialty[]>([]);
   const [selectedSpecialty, setSelectedSpecialty] = React.useState<string>('');
   const [similarSpecialties, setSimilarSpecialties] = React.useState<Specialty[]>([]);
-  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-  const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-  const supabase = createClient(supabaseUrl, supabaseKey);
 
   useEffect(() => {
     // Fetch specialties from the backend API
     const fetchSpecialties = async () => {
       try {
-        if (!supabaseUrl || !supabaseKey) {
-          throw new Error('Supabase environment variables not configured');
-        }
-        
         const { data, error } = await supabase.functions.invoke('get-specialties');
         
         if (error) {

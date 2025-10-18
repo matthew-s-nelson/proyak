@@ -49,8 +49,8 @@ const Login: React.FC = () => {
         // Redirect to setup-profile or dashboard after successful login
         navigate('/setup-profile');
       }
-    } catch (err: any) {
-      setError(err.message || 'An error occurred during login');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'An error occurred during login');
     } finally {
       setIsLoading(false);
     }
