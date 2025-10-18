@@ -86,6 +86,20 @@ main { padding-top: 1rem; }
   font-weight: 700;
 }
 
+/* Auth Section Styling */
+.auth-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.auth-section span {
+  color: #374151;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
 .cta-button {
   background: #0f2a63;
   color: white;
@@ -95,6 +109,7 @@ main { padding-top: 1rem; }
   text-decoration: none;
   font-weight: 600;
   transition: background 0.3s;
+  white-space: nowrap;
 }
 
 .cta-button:hover {
@@ -510,6 +525,12 @@ footer {
 
 /* Responsive */
 @media (max-width: 768px) {
+  .header nav {
+    padding: 1rem !important;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
   .nav-links {
     display: none;
   }

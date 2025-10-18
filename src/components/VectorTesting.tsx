@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { createClient } from '@supabase/supabase-js'
+import SpecialtySearch from './specialty/SpecialtySearch'
 
 interface Specialty {
   id: number;
@@ -40,6 +41,8 @@ const VectorTesting: React.FC = () => {
     fetchSpecialties();
   }, []);
 
+
+
   useEffect(() => {
     const getSimilarSpecialties = async () => {
       if (!selectedSpecialty) return;
@@ -65,20 +68,38 @@ const VectorTesting: React.FC = () => {
     getSimilarSpecialties();
   }, [selectedSpecialty]);
 
+  const handleSpecialtySelect = (specialty: Specialty) => {
+    setSelectedSpecialty(specialty.name);
+  };
+
   return (
     <>
         <h1>Vector Testing</h1>
-        <select onChange={(e) => {
-            setSelectedSpecialty(e.target.value);
-        }}>
-            <option value="" disabled>Select Specialty</option>
+        
+        {/* Reusable Specialty Search Component */}
+        <div style={{ marginBottom: '20px' }}>
+          <SpecialtySearch 
+            onSpecialtySelect={handleSpecialtySelect}
+            placeholder="Search for a specialty..."
+            width="400px"
+          />
+        </div>
+
+        {/* Original Select Dropdown (keeping for comparison) */}
+        <select 
+          value={selectedSpecialty}
+          onChange={(e) => setSelectedSpecialty(e.target.value)}
+          style={{ marginBottom: '20px' }}
+        >
+            <option value="">Select Specialty from full list</option>
             {specialties.map((specialty, index) => (
                 <option key={index} value={specialty.name}>{specialty.name}</option>
             ))}
         </select>
+        
         {similarSpecialties.length > 0 && (
           <div>
-            <h2>Similar Specialties:</h2>
+            <h2>Similar Specialties to "{selectedSpecialty}":</h2>
             <ul>
               {similarSpecialties.map((specialty, index) => (
                 <li key={index}>{index+1}. {specialty.name}</li>

@@ -11,6 +11,11 @@ import MeritScore from './components/MeritScore'
 import CandidateList from './components/CandidateList'
 import './App.css'
 import VectorTesting from './components/VectorTesting'
+import Register from './components/auth/Register'
+import Login from './components/auth/Login'
+import SetupProfile from './components/SetupProfile'
+import { AuthProvider, useAuth } from './contexts/AuthContext'
+import ProtectedRoute from './components/ProtectedRoute'
 
 function HomePage() {
   return (
@@ -22,7 +27,9 @@ function HomePage() {
   )
 }
 
-function App() {
+function AppContent() {
+  const { loading } = useAuth()
+
   useEffect(() => {
     const setBodyPadding = () => {
       const header = document.querySelector('.header') as HTMLElement | null;
@@ -35,6 +42,11 @@ function App() {
     window.addEventListener('resize', setBodyPadding);
     return () => window.removeEventListener('resize', setBodyPadding);
   }, []);
+
+  if (loading) {
+    return <div className="loading-spinner">Loading...</div>
+  }
+
   return (
     <Router>
       <div className="App">
@@ -42,19 +54,51 @@ function App() {
 
         <main>
           <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/features" element={<Features />} />
-              <Route path="/how-it-works" element={<HowItWorks />} />
-              <Route path="/employer" element={<EmployerDashboard />} />
-              <Route path="/candidates" element={<CandidateList />} />
-              <Route path="/testing" element={<VectorTesting />} />
-              <Route path="*" element={<HomePage />} />
+            <Route path="/" element={<HomePage />} />
+            <Route path="/features" element={<Features />} />
+            <Route path="/how-it-works" element={<HowItWorks />} />
+            <Route 
+              path="/employer" 
+              element={
+                <ProtectedRoute>
+                  <EmployerDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/candidates" 
+              element={
+                <ProtectedRoute>
+                  <CandidateList />
+                </ProtectedRoute>
+              } 
+            />
+            <Route path="/testing" element={<VectorTesting />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/login" element={<Login />} />
+            <Route 
+              path="/setup-profile" 
+              element={
+                <ProtectedRoute>
+                  <SetupProfile />
+                </ProtectedRoute>
+              } 
+            />
+            <Route path="*" element={<HomePage />} />
           </Routes>
         </main>
 
         <Footer />
       </div>
     </Router>
+  )
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   )
 }
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom'
 import logoImage from '/logo.png';
+import AuthSection from './AuthSection';
 
 const Header: React.FC = () => {
   return (
@@ -16,7 +17,7 @@ const Header: React.FC = () => {
           <li><NavLink to="/candidates">Candidates</NavLink></li>
           <li><NavLink to="/testing">Vector Testing</NavLink></li>
         </ul>
-        <NavLink to="/" className="cta-button">Home</NavLink>
+        <AuthSection />
       </nav>
     </header>
   );
