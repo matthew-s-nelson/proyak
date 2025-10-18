@@ -1,5 +1,6 @@
 # Proyak
 ## Getting the code running locally
+NOTE: I'd strongly advise against using Safari for local development. It was causing me a lot of issues, but it works fine once deployed.
 1. Clone the repo to your local machine
 2. In the root directory of the project, run `npm install`
 3. Run `cp example.env .env` and put in the Supabase project URL and key
