@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 interface AutocompleteItem {
   id: number | string;
-  [key: string]: any; // Allow any additional properties
+  [key: string]: unknown; // Allow any additional properties
 }
 
 interface AutocompleteSearchProps<T extends AutocompleteItem> {

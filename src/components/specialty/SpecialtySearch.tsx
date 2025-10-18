@@ -1,10 +1,11 @@
 import React from 'react';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '../../lib/supabase';
 import AutocompleteSearch from '../shared/AutocompleteSearch';
 
 interface Specialty {
   id: number;
   name: string;
+  [key: string]: any;
 }
 
 interface SpecialtySearchProps {
@@ -13,14 +14,12 @@ interface SpecialtySearchProps {
   width?: string;
 }
 
-const SpecialtySearch: React.FC<SpecialtySearchProps> = ({
-  onSpecialtySelect,
-  placeholder = "Search for a specialty...",
-  width = "300px"
-}) => {
-  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-  const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-  const supabase = createClient(supabaseUrl, supabaseKey);
+const SpecialtySearch: React.FC<SpecialtySearchProps> = (props) => {
+  const {
+    onSpecialtySelect,
+    placeholder = "Search for a specialty...",
+    width = "300px"
+  } = props;
 
   const searchSpecialties = async (query: string): Promise<Specialty[]> => {
     try {
