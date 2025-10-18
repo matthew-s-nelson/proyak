@@ -1,8 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import SpecialtySearch from './specialty/SpecialtySearch'
+import InterestSearch from './interest/InterestSearch'
 
 interface Specialty {
+  id: number;
+  name: string;
+}
+
+interface Interest {
   id: number;
   name: string;
 }
@@ -13,6 +19,7 @@ const VectorTesting: React.FC = () => {
   const [specialties, setSpecialties] = useState<Specialty[]>([]);
   const [selectedSpecialty, setSelectedSpecialty] = React.useState<string>('');
   const [similarSpecialties, setSimilarSpecialties] = React.useState<Specialty[]>([]);
+  const [selectedInterest, setSelectedInterest] = React.useState<Interest | null>(null);
 
   useEffect(() => {
     // Fetch specialties from the backend API
@@ -65,17 +72,38 @@ const VectorTesting: React.FC = () => {
     setSelectedSpecialty(specialty.name);
   };
 
+  const handleInterestSelect = (interest: Interest) => {
+    setSelectedInterest(interest);
+    console.log('Selected interest:', interest);
+  };
+
   return (
     <>
         <h1>Vector Testing</h1>
         
         {/* Reusable Specialty Search Component */}
         <div style={{ marginBottom: '20px' }}>
+          <h3>Search Specialties:</h3>
           <SpecialtySearch 
             onSpecialtySelect={handleSpecialtySelect}
             placeholder="Search for a specialty..."
             width="400px"
           />
+        </div>
+
+        {/* Reusable Interest Search Component */}
+        <div style={{ marginBottom: '20px' }}>
+          <h3>Search Interests:</h3>
+          <InterestSearch 
+            onInterestSelect={handleInterestSelect}
+            placeholder="Search for an interest..."
+            width="400px"
+          />
+          {selectedInterest && (
+            <p style={{ marginTop: '10px', color: '#666' }}>
+              Selected: <strong>{selectedInterest.name}</strong>
+            </p>
+          )}
         </div>
 
         {/* Original Select Dropdown (keeping for comparison) */}
