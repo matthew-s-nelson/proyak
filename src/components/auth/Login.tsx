@@ -190,7 +190,7 @@ const Login: React.FC = () => {
         }}>
           Don't have an account?{' '}
           <a 
-            href="/register" 
+            href="/#/register" 
             style={{ 
               color: '#3b82f6', 
               textDecoration: 'none',

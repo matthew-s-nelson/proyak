@@ -270,7 +270,7 @@ const Register: React.FC = () => {
         }}>
           Already have an account?{' '}
           <a 
-            href="/login" 
+            href="/#/login" 
             style={{ 
               color: '#3b82f6', 
               textDecoration: 'none',
