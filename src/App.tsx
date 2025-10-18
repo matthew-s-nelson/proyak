@@ -31,16 +31,28 @@ function AppContent() {
   const { loading } = useAuth()
 
   useEffect(() => {
-    const setBodyPadding = () => {
+    const setMainPadding = () => {
       const header = document.querySelector('.header') as HTMLElement | null;
-      const height = header ? header.getBoundingClientRect().height : 0;
-      // set padding on body so fixed header doesn't overlap content
-      document.body.style.paddingTop = height + 'px';
+      const main = document.querySelector('main') as HTMLElement | null;
+      
+      if (header && main) {
+        // Use a small timeout to ensure header is fully rendered
+        setTimeout(() => {
+          const height = header.getBoundingClientRect().height;
+          main.style.paddingTop = Math.max(height, 80) + 'px'; // Minimum 80px padding
+          console.log('Header height:', height, 'Applied padding:', Math.max(height, 80) + 'px');
+        }, 100);
+      }
     };
 
-    setBodyPadding();
-    window.addEventListener('resize', setBodyPadding);
-    return () => window.removeEventListener('resize', setBodyPadding);
+    setMainPadding();
+    window.addEventListener('resize', setMainPadding);
+    window.addEventListener('load', setMainPadding);
+    
+    return () => {
+      window.removeEventListener('resize', setMainPadding);
+      window.removeEventListener('load', setMainPadding);
+    };
   }, []);
 
   if (loading) {
