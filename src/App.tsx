@@ -11,8 +11,11 @@ import MeritScore from './components/MeritScore'
 import CandidateList from './components/CandidateList'
 import './App.css'
 import VectorTesting from './components/VectorTesting'
-import Register from './components/auth/Register'
+import RegisterTypeSelector from './components/auth/RegisterTypeSelector'
+import RegisterIndividual from './components/auth/RegisterIndividual'
+import RegisterBusiness from './components/auth/RegisterBusiness'
 import Login from './components/auth/Login'
+import IndividualProfileSetup from './components/auth/IndividualProfileSetup'
 import SetupProfile from './components/SetupProfile'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import ProtectedRoute from './components/ProtectedRoute'
@@ -69,11 +72,63 @@ function AppContent() {
             <Route path="/" element={<HomePage />} />
             <Route path="/features" element={<Features />} />
             <Route path="/how-it-works" element={<HowItWorks />} />
+            
+            {/* Registration Routes */}
+            <Route path="/register" element={<RegisterTypeSelector />} />
+            <Route path="/register-individual" element={<RegisterIndividual />} />
+            <Route path="/register-business" element={<RegisterBusiness />} />
+            
+            {/* Login Route */}
+            <Route path="/login" element={<Login />} />
+            
+            {/* Profile Setup Routes */}
+            <Route 
+              path="/individual-profile-setup" 
+              element={
+                <ProtectedRoute>
+                  <IndividualProfileSetup />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/business-profile-setup" 
+              element={
+                <ProtectedRoute>
+                  <SetupProfile />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/setup-profile" 
+              element={
+                <ProtectedRoute>
+                  <SetupProfile />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* Protected Dashboard Routes */}
             <Route 
               path="/employer" 
               element={
                 <ProtectedRoute>
                   <EmployerDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/business-dashboard" 
+              element={
+                <ProtectedRoute>
+                  <EmployerDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/individual-dashboard" 
+              element={
+                <ProtectedRoute>
+                  <MeritScore />
                 </ProtectedRoute>
               } 
             />
@@ -85,17 +140,11 @@ function AppContent() {
                 </ProtectedRoute>
               } 
             />
+            
+            {/* Testing Route */}
             <Route path="/testing" element={<VectorTesting />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/login" element={<Login />} />
-            <Route 
-              path="/setup-profile" 
-              element={
-                <ProtectedRoute>
-                  <SetupProfile />
-                </ProtectedRoute>
-              } 
-            />
+            
+            {/* Fallback */}
             <Route path="*" element={<HomePage />} />
           </Routes>
         </main>

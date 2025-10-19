@@ -13,8 +13,10 @@ const Header: React.FC = () => {
         <ul className="nav-links">
           <li><NavLink to="/features">Features</NavLink></li>
           <li><NavLink to="/how-it-works">How It Works</NavLink></li>
-          <li><NavLink to="/employer">Employer Dashboard</NavLink></li>
-          <li><NavLink to="/candidates">Candidates</NavLink></li>
+          {/* <li><NavLink to="/employer">Employer Dashboard</NavLink></li> */}
+          {/* <li><NavLink to="/candidates">Candidates</NavLink></li> */}
+          <li><NavLink to="/register">Get Started</NavLink></li>
+
           <li><NavLink to="/testing">Vector Testing</NavLink></li>
         </ul>
         <AuthSection />

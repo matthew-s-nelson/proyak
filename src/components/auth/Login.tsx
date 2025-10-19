@@ -17,7 +17,6 @@ const Login: React.FC = () => {
       ...prev,
       [name]: value
     }));
-    // Clear error when user starts typing
     if (error) setError(null);
   };
 
@@ -26,7 +25,6 @@ const Login: React.FC = () => {
     setIsLoading(true);
     setError(null);
 
-    // Basic validation
     if (!formData.email.trim() || !formData.password) {
       setError('Email and password are required');
       setIsLoading(false);
@@ -34,20 +32,27 @@ const Login: React.FC = () => {
     }
 
     try {
-        console.log('logging in');
       const { data, error: signInError } = await supabase.auth.signInWithPassword({
         email: formData.email,
         password: formData.password,
       });
-      console.log('logged in');
 
       if (signInError) {
         throw signInError;
       }
 
       if (data.user) {
-        // Redirect to setup-profile or dashboard after successful login
-        navigate('/setup-profile');
+        // Check user type and redirect accordingly
+        const userType = data.user.user_metadata?.user_type;
+        
+        if (userType === 'business') {
+          navigate('/business-dashboard');
+        } else if (userType === 'individual') {
+          navigate('/individual-dashboard');
+        } else {
+          // Default fallback
+          navigate('/');
+        }
       }
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'An error occurred during login');
@@ -62,39 +67,54 @@ const Login: React.FC = () => {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundColor: '#f5f5f5'
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      padding: '2rem'
     }}>
       <div style={{
         backgroundColor: 'white',
-        padding: '2rem',
-        borderRadius: '8px',
-        boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
-        maxWidth: '400px',
+        padding: '2.5rem',
+        borderRadius: '12px',
+        boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
+        maxWidth: '450px',
         width: '100%'
       }}>
-        <h2 style={{
+        <div style={{
           textAlign: 'center',
-          marginBottom: '2rem',
-          color: '#333'
+          marginBottom: '2rem'
         }}>
-          Sign In
-        </h2>
+          <h2 style={{
+            fontSize: '2rem',
+            fontWeight: '700',
+            color: '#1f2937',
+            margin: '0 0 0.5rem 0'
+          }}>
+            Welcome Back
+          </h2>
+          <p style={{
+            color: '#6b7280',
+            fontSize: '1rem',
+            margin: 0
+          }}>
+            Sign in to your account to continue
+          </p>
+        </div>
 
         {error && (
           <div style={{
             backgroundColor: '#fee2e2',
             color: '#dc2626',
-            padding: '0.75rem',
-            borderRadius: '4px',
-            marginBottom: '1rem',
-            border: '1px solid #fecaca'
+            padding: '0.875rem',
+            borderRadius: '8px',
+            marginBottom: '1.5rem',
+            border: '1px solid #fecaca',
+            fontSize: '14px'
           }}>
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: '1rem' }}>
+          <div style={{ marginBottom: '1.25rem' }}>
             <label 
               htmlFor="email"
               style={{
@@ -102,7 +122,7 @@ const Login: React.FC = () => {
                 marginBottom: '0.5rem',
                 color: '#374151',
                 fontSize: '14px',
-                fontWeight: '500'
+                fontWeight: '600'
               }}
             >
               Email Address
@@ -114,17 +134,19 @@ const Login: React.FC = () => {
               value={formData.email}
               onChange={handleChange}
               required
+              placeholder="your@email.com"
               style={{
                 width: '100%',
-                padding: '0.75rem',
-                border: '1px solid #d1d5db',
-                borderRadius: '4px',
-                fontSize: '16px',
+                padding: '0.875rem',
+                border: '2px solid #e5e7eb',
+                borderRadius: '8px',
+                fontSize: '15px',
                 outline: 'none',
-                boxSizing: 'border-box'
+                boxSizing: 'border-box',
+                transition: 'border-color 0.2s'
               }}
-              onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
-              onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
+              onFocus={(e) => e.target.style.borderColor = '#667eea'}
+              onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
             />
           </div>
 
@@ -136,7 +158,7 @@ const Login: React.FC = () => {
                 marginBottom: '0.5rem',
                 color: '#374151',
                 fontSize: '14px',
-                fontWeight: '500'
+                fontWeight: '600'
               }}
             >
               Password
@@ -148,17 +170,19 @@ const Login: React.FC = () => {
               value={formData.password}
               onChange={handleChange}
               required
+              placeholder="••••••••"
               style={{
                 width: '100%',
-                padding: '0.75rem',
-                border: '1px solid #d1d5db',
-                borderRadius: '4px',
-                fontSize: '16px',
+                padding: '0.875rem',
+                border: '2px solid #e5e7eb',
+                borderRadius: '8px',
+                fontSize: '15px',
                 outline: 'none',
-                boxSizing: 'border-box'
+                boxSizing: 'border-box',
+                transition: 'border-color 0.2s'
               }}
-              onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
-              onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
+              onFocus={(e) => e.target.style.borderColor = '#667eea'}
+              onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
             />
           </div>
 
@@ -167,39 +191,77 @@ const Login: React.FC = () => {
             disabled={isLoading}
             style={{
               width: '100%',
-              backgroundColor: isLoading ? '#9ca3af' : '#3b82f6',
+              background: isLoading ? '#9ca3af' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
               color: 'white',
               border: 'none',
-              padding: '0.75rem',
-              borderRadius: '4px',
+              padding: '1rem',
+              borderRadius: '8px',
               fontSize: '16px',
-              fontWeight: '500',
+              fontWeight: '600',
               cursor: isLoading ? 'not-allowed' : 'pointer',
-              transition: 'background-color 0.2s'
+              transition: 'transform 0.2s, box-shadow 0.2s',
+              boxShadow: isLoading ? 'none' : '0 4px 15px rgba(102, 126, 234, 0.4)'
+            }}
+            onMouseEnter={(e) => {
+              if (!isLoading) {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 6px 20px rgba(102, 126, 234, 0.5)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!isLoading) {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 4px 15px rgba(102, 126, 234, 0.4)';
+              }
             }}
           >
             {isLoading ? 'Signing In...' : 'Sign In'}
           </button>
         </form>
 
-        <p style={{
-          textAlign: 'center',
+        <div style={{
           marginTop: '1.5rem',
-          color: '#6b7280',
-          fontSize: '14px'
+          paddingTop: '1.5rem',
+          borderTop: '1px solid #e5e7eb',
+          textAlign: 'center'
         }}>
-          Don't have an account?{' '}
-          <a 
-            href="/#/register" 
-            style={{ 
-              color: '#3b82f6', 
-              textDecoration: 'none',
-              fontWeight: '500'
-            }}
-          >
-            Create one here
-          </a>
-        </p>
+          <p style={{
+            color: '#6b7280',
+            fontSize: '14px',
+            marginBottom: '1rem'
+          }}>
+            Don't have an account yet?
+          </p>
+          <div style={{
+            display: 'flex',
+            gap: '0.75rem',
+            justifyContent: 'center'
+          }}>
+            <a 
+              href="/#/register" 
+              style={{ 
+                color: '#667eea',
+                textDecoration: 'none',
+                fontWeight: '600',
+                fontSize: '14px',
+                padding: '0.5rem 1rem',
+                border: '2px solid #667eea',
+                borderRadius: '6px',
+                transition: 'all 0.2s'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#667eea';
+                e.currentTarget.style.color = 'white';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent';
+                e.currentTarget.style.color = '#667eea';
+              }}
+            >
+              Create Account
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   );
