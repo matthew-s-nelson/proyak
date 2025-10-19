@@ -1,8 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import SpecialtySearch from './specialty/SpecialtySearch'
+import InterestSearch from './interest/InterestSearch'
 
 interface Specialty {
+  id: number;
+  name: string;
+}
+
+interface Interest {
   id: number;
   name: string;
 }
@@ -13,6 +19,8 @@ const VectorTesting: React.FC = () => {
   const [specialties, setSpecialties] = useState<Specialty[]>([]);
   const [selectedSpecialty, setSelectedSpecialty] = React.useState<string>('');
   const [similarSpecialties, setSimilarSpecialties] = React.useState<Specialty[]>([]);
+  const [selectedInterest, setSelectedInterest] = React.useState<Interest | null>(null);
+  const [similarInterests, setSimilarInterests] = React.useState<Interest[]>([]);
 
   useEffect(() => {
     // Fetch specialties from the backend API
@@ -61,8 +69,41 @@ const VectorTesting: React.FC = () => {
     getSimilarSpecialties();
   }, [selectedSpecialty]);
 
+  useEffect(() => {
+    const getSimilarInterests = async () => {
+      if (!selectedInterest) {
+        setSimilarInterests([]);
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase.functions.invoke('get-similar-interests', {
+          body: {
+            input_name: selectedInterest.name,
+            num_rows: NUM_ROWS
+          }
+        });
+
+        if (error) {
+          console.error('Failed to get similar interests:', error);
+        } else {
+          setSimilarInterests((data ?? []) as Interest[]);
+        }
+      } catch (err) {
+        console.error('Error calling get-similar-interests function:', err);
+      }
+    }
+
+    getSimilarInterests();
+  }, [selectedInterest]);
+
   const handleSpecialtySelect = (specialty: Specialty) => {
     setSelectedSpecialty(specialty.name);
+  };
+
+  const handleInterestSelect = (interest: Interest) => {
+    setSelectedInterest(interest);
+    console.log('Selected interest:', interest);
   };
 
   return (
@@ -71,11 +112,27 @@ const VectorTesting: React.FC = () => {
         
         {/* Reusable Specialty Search Component */}
         <div style={{ marginBottom: '20px' }}>
+          <h3>Search Specialties:</h3>
           <SpecialtySearch 
             onSpecialtySelect={handleSpecialtySelect}
             placeholder="Search for a specialty..."
             width="400px"
           />
+        </div>
+
+        {/* Reusable Interest Search Component */}
+        <div style={{ marginBottom: '20px' }}>
+          <h3>Search Interests:</h3>
+          <InterestSearch 
+            onInterestSelect={handleInterestSelect}
+            placeholder="Search for an interest..."
+            width="400px"
+          />
+          {selectedInterest && (
+            <p style={{ marginTop: '10px', color: '#666' }}>
+              Selected: <strong>{selectedInterest.name}</strong>
+            </p>
+          )}
         </div>
 
         {/* Original Select Dropdown (keeping for comparison) */}
@@ -96,6 +153,17 @@ const VectorTesting: React.FC = () => {
             <ul>
               {similarSpecialties.map((specialty, index) => (
                 <li key={index}>{index+1}. {specialty.name}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {similarInterests.length > 0 && (
+          <div>
+            <h2>Similar Interests to "{selectedInterest?.name}":</h2>
+            <ul>
+              {similarInterests.map((interest, index) => (
+                <li key={index}>{index+1}. {interest.name}</li>
               ))}
             </ul>
           </div>
