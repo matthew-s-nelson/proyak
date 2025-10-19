@@ -1,9 +1,27 @@
-import React from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User, Building2, UserPlus } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
 
 const RegisterTypeSelector: React.FC = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user) {
+      const userType = user.user_metadata?.user_type;
+      if (userType === 'business') {
+        navigate('/business-dashboard');
+      } else if (userType === 'recruiter') {
+        navigate('/recruiter-dashboard');
+      } else if (userType === 'individual') {
+        navigate('/individual-dashboard');
+      } else {
+        navigate('/');
+      }
+    }
+  }, [user, navigate]);
 
   return (
     <div style={{

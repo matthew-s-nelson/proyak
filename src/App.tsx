@@ -17,6 +17,9 @@ import RegisterBusiness from './components/auth/RegisterBusiness'
 import RegisterRecruiter from './components/auth/RegisterRecruiter'
 import Login from './components/auth/Login'
 import IndividualProfileSetup from './components/auth/IndividualProfileSetup'
+import IndividualDashboard from './components/IndividualDashboard'
+import RecruiterDashboard from './components/RecruiterDashboard'
+import PostJob from './components/PostJob'
 import SetupProfile from './components/SetupProfile'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import ProtectedRoute from './components/ProtectedRoute'
@@ -130,7 +133,7 @@ function AppContent() {
               path="/recruiter-dashboard" 
               element={
                 <ProtectedRoute>
-                  <EmployerDashboard />
+                  <RecruiterDashboard />
                 </ProtectedRoute>
               } 
             />
@@ -138,7 +141,7 @@ function AppContent() {
               path="/individual-dashboard" 
               element={
                 <ProtectedRoute>
-                  <MeritScore />
+                  <IndividualDashboard />
                 </ProtectedRoute>
               } 
             />
@@ -147,6 +150,16 @@ function AppContent() {
               element={
                 <ProtectedRoute>
                   <CandidateList />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* Job Posting Routes */}
+            <Route 
+              path="/post-job" 
+              element={
+                <ProtectedRoute>
+                  <PostJob />
                 </ProtectedRoute>
               } 
             />

@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
+import { useAuth } from '../../contexts/AuthContext';
 
 const Login: React.FC = () => {
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -10,6 +12,22 @@ const Login: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user) {
+      const userType = user.user_metadata?.user_type;
+      if (userType === 'business') {
+        navigate('/business-dashboard');
+      } else if (userType === 'recruiter') {
+        navigate('/recruiter-dashboard');
+      } else if (userType === 'individual') {
+        navigate('/individual-dashboard');
+      } else {
+        navigate('/');
+      }
+    }
+  }, [user, navigate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -45,20 +63,15 @@ const Login: React.FC = () => {
         // Check user type and redirect accordingly
         const userType = data.user.user_metadata?.user_type;
         
-        if (data.user) {
-
-        
         if (userType === 'business') {
           navigate('/business-dashboard');
-        } else if (userType === 'recruiter') {
-          navigate('/recruiter-dashboard');
         } else if (userType === 'individual') {
           navigate('/individual-dashboard');
         } else {
+          // Default fallback
           navigate('/');
         }
       }
-    }
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'An error occurred during login');
     } finally {
