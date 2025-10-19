@@ -45,15 +45,20 @@ const Login: React.FC = () => {
         // Check user type and redirect accordingly
         const userType = data.user.user_metadata?.user_type;
         
+        if (data.user) {
+
+        
         if (userType === 'business') {
           navigate('/business-dashboard');
+        } else if (userType === 'recruiter') {
+          navigate('/recruiter-dashboard');
         } else if (userType === 'individual') {
           navigate('/individual-dashboard');
         } else {
-          // Default fallback
           navigate('/');
         }
       }
+    }
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'An error occurred during login');
     } finally {

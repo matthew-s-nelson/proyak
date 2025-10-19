@@ -14,6 +14,7 @@ import VectorTesting from './components/VectorTesting'
 import RegisterTypeSelector from './components/auth/RegisterTypeSelector'
 import RegisterIndividual from './components/auth/RegisterIndividual'
 import RegisterBusiness from './components/auth/RegisterBusiness'
+import RegisterRecruiter from './components/auth/RegisterRecruiter'
 import Login from './components/auth/Login'
 import IndividualProfileSetup from './components/auth/IndividualProfileSetup'
 import SetupProfile from './components/SetupProfile'
@@ -77,6 +78,7 @@ function AppContent() {
             <Route path="/register" element={<RegisterTypeSelector />} />
             <Route path="/register-individual" element={<RegisterIndividual />} />
             <Route path="/register-business" element={<RegisterBusiness />} />
+            <Route path="/register-recruiter" element={<RegisterRecruiter />} />
             
             {/* Login Route */}
             <Route path="/login" element={<Login />} />
@@ -118,6 +120,14 @@ function AppContent() {
             />
             <Route 
               path="/business-dashboard" 
+              element={
+                <ProtectedRoute>
+                  <EmployerDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/recruiter-dashboard" 
               element={
                 <ProtectedRoute>
                   <EmployerDashboard />

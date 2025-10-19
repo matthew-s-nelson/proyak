@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, Building2 } from 'lucide-react';
+import { User, Building2, UserPlus } from 'lucide-react';
 
 const RegisterTypeSelector: React.FC = () => {
   const navigate = useNavigate();
@@ -15,7 +15,7 @@ const RegisterTypeSelector: React.FC = () => {
       padding: '2rem'
     }}>
       <div style={{
-        maxWidth: '1000px',
+        maxWidth: '1200px',
         width: '100%'
       }}>
         {/* Header */}
@@ -43,7 +43,7 @@ const RegisterTypeSelector: React.FC = () => {
         {/* Registration Cards */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
           gap: '2rem'
         }}>
           {/* Individual Card */}
@@ -86,7 +86,7 @@ const RegisterTypeSelector: React.FC = () => {
               color: '#1f2937',
               marginBottom: '1rem'
             }}>
-              Individual
+              Job Seeker
             </h2>
             <p style={{
               fontSize: '1rem',
@@ -94,7 +94,7 @@ const RegisterTypeSelector: React.FC = () => {
               lineHeight: '1.6',
               marginBottom: '2rem'
             }}>
-              Create your account by filling out a quick form with your basic information and professional background. Get started with Proyak and unlock personalized job opportunities that match your skills.
+              Looking for a job? Create your profile, showcase your skills, and get matched with opportunities that fit your experience.
             </p>
             <button style={{
               background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -108,7 +108,7 @@ const RegisterTypeSelector: React.FC = () => {
               width: '100%',
               maxWidth: '250px'
             }}>
-              Register as Individual
+              Register as Job Seeker
             </button>
           </div>
 
@@ -152,7 +152,7 @@ const RegisterTypeSelector: React.FC = () => {
               color: '#1f2937',
               marginBottom: '1rem'
             }}>
-              Business
+              New Business
             </h2>
             <p style={{
               fontSize: '1rem',
@@ -160,7 +160,7 @@ const RegisterTypeSelector: React.FC = () => {
               lineHeight: '1.6',
               marginBottom: '2rem'
             }}>
-              Register your business to start posting and discovering talent. Access our platform's powerful hiring tools and connect with verified professionals who match your needs.
+              Starting from scratch? Register your company first, then add recruiters who can post jobs and manage candidates.
             </p>
             <button style={{
               background: 'linear-gradient(135deg, #0f2a63 0%, #2563eb 100%)',
@@ -174,7 +174,73 @@ const RegisterTypeSelector: React.FC = () => {
               width: '100%',
               maxWidth: '250px'
             }}>
-              Register as Business
+              Register New Business
+            </button>
+          </div>
+
+          {/* Recruiter Card */}
+          <div style={{
+            backgroundColor: 'white',
+            borderRadius: '16px',
+            padding: '3rem 2rem',
+            textAlign: 'center',
+            boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
+            cursor: 'pointer',
+            transition: 'transform 0.3s, box-shadow 0.3s',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center'
+          }}
+          onClick={() => navigate('/register-recruiter')}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'translateY(-8px)';
+            e.currentTarget.style.boxShadow = '0 25px 70px rgba(0, 0, 0, 0.4)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'translateY(0)';
+            e.currentTarget.style.boxShadow = '0 20px 60px rgba(0, 0, 0, 0.3)';
+          }}>
+            <div style={{
+              width: '80px',
+              height: '80px',
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: '1.5rem'
+            }}>
+              <UserPlus size={40} color="white" />
+            </div>
+            <h2 style={{
+              fontSize: '1.75rem',
+              fontWeight: '700',
+              color: '#1f2937',
+              marginBottom: '1rem'
+            }}>
+              Recruiter
+            </h2>
+            <p style={{
+              fontSize: '1rem',
+              color: '#6b7280',
+              lineHeight: '1.6',
+              marginBottom: '2rem'
+            }}>
+              Your company already has an account? Create your recruiter profile and link it to your business to start hiring.
+            </p>
+            <button style={{
+              background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)',
+              color: 'white',
+              padding: '0.875rem 2rem',
+              border: 'none',
+              borderRadius: '8px',
+              fontSize: '16px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              width: '100%',
+              maxWidth: '250px'
+            }}>
+              Register as Recruiter
             </button>
           </div>
         </div>

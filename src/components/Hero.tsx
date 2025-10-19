@@ -17,7 +17,7 @@ const Hero: React.FC = () => {
       <div className="container">
         <h1>
           <img src={logoImage} alt="Proyak Logo" />
-          <span style={{ marginTop: '30px', display: 'inline-block', verticalAlign: 'top' }}>is Coming Soon</span>
+
         </h1>
         <p>
           We're building the first job board that's completely free for job seekers and uses verified credentials to create perfect matches. Help us validate our concept and stay updated on our progress.
