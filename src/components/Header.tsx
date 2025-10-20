@@ -1,6 +1,7 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import logoImage from "/public/logo.png";
+import logoImage from "/logo.png";
+import AuthSection from "./AuthSection";
 
 const Header: React.FC = () => {
     return (
@@ -16,16 +17,17 @@ const Header: React.FC = () => {
                     <li>
                         <NavLink to="/how-it-works">How It Works</NavLink>
                     </li>
+                    {/* <li><NavLink to="/employer">Employer Dashboard</NavLink></li> */}
+                    {/* <li><NavLink to="/candidates">Candidates</NavLink></li> */}
                     <li>
-                        <NavLink to="/employer">Employer Dashboard</NavLink>
+                        <NavLink to="/register">Get Started</NavLink>
                     </li>
+
                     <li>
-                        <NavLink to="/candidates">Candidates</NavLink>
+                        <NavLink to="/testing">Vector Testing</NavLink>
                     </li>
                 </ul>
-                <NavLink to="/" className="cta-button">
-                    Home
-                </NavLink>
+                <AuthSection />
             </nav>
         </header>
     );

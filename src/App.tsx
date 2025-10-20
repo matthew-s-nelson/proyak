@@ -10,6 +10,19 @@ import EmployerDashboard from './components/EmployerDashboard'
 import MeritScore from './components/MeritScore'
 import CandidateList from './components/CandidateList'
 import './App.css'
+import VectorTesting from './components/VectorTesting'
+import RegisterTypeSelector from './components/auth/RegisterTypeSelector'
+import RegisterIndividual from './components/auth/RegisterIndividual'
+import RegisterBusiness from './components/auth/RegisterBusiness'
+import RegisterRecruiter from './components/auth/RegisterRecruiter'
+import Login from './components/auth/Login'
+import IndividualProfileSetup from './components/auth/IndividualProfileSetup'
+import IndividualDashboard from './components/IndividualDashboard'
+import RecruiterDashboard from './components/RecruiterDashboard'
+import PostJob from './components/PostJob'
+import SetupProfile from './components/SetupProfile'
+import { AuthProvider, useAuth } from './contexts/AuthContext'
+import ProtectedRoute from './components/ProtectedRoute'
 
 function HomePage() {
   return (
@@ -21,19 +34,38 @@ function HomePage() {
   )
 }
 
-function App() {
+function AppContent() {
+  const { loading } = useAuth()
+
   useEffect(() => {
-    const setBodyPadding = () => {
+    const setMainPadding = () => {
       const header = document.querySelector('.header') as HTMLElement | null;
-      const height = header ? header.getBoundingClientRect().height : 0;
-      // set padding on body so fixed header doesn't overlap content
-      document.body.style.paddingTop = height + 'px';
+      const main = document.querySelector('main') as HTMLElement | null;
+      
+      if (header && main) {
+        // Use a small timeout to ensure header is fully rendered
+        setTimeout(() => {
+          const height = header.getBoundingClientRect().height;
+          main.style.paddingTop = Math.max(height, 80) + 'px'; // Minimum 80px padding
+          console.log('Header height:', height, 'Applied padding:', Math.max(height, 80) + 'px');
+        }, 100);
+      }
     };
 
-    setBodyPadding();
-    window.addEventListener('resize', setBodyPadding);
-    return () => window.removeEventListener('resize', setBodyPadding);
+    setMainPadding();
+    window.addEventListener('resize', setMainPadding);
+    window.addEventListener('load', setMainPadding);
+    
+    return () => {
+      window.removeEventListener('resize', setMainPadding);
+      window.removeEventListener('load', setMainPadding);
+    };
   }, []);
+
+  if (loading) {
+    return <div className="loading-spinner">Loading...</div>
+  }
+
   return (
     <Router>
       <div className="App">
@@ -41,18 +73,116 @@ function App() {
 
         <main>
           <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/features" element={<Features />} />
-              <Route path="/how-it-works" element={<HowItWorks />} />
-              <Route path="/employer" element={<EmployerDashboard />} />
-              <Route path="/candidates" element={<CandidateList />} />
-              <Route path="*" element={<HomePage />} />
+            <Route path="/" element={<HomePage />} />
+            <Route path="/features" element={<Features />} />
+            <Route path="/how-it-works" element={<HowItWorks />} />
+            
+            {/* Registration Routes */}
+            <Route path="/register" element={<RegisterTypeSelector />} />
+            <Route path="/register-individual" element={<RegisterIndividual />} />
+            <Route path="/register-business" element={<RegisterBusiness />} />
+            <Route path="/register-recruiter" element={<RegisterRecruiter />} />
+            
+            {/* Login Route */}
+            <Route path="/login" element={<Login />} />
+            
+            {/* Profile Setup Routes */}
+            <Route 
+              path="/individual-profile-setup" 
+              element={
+                <ProtectedRoute>
+                  <IndividualProfileSetup />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/business-profile-setup" 
+              element={
+                <ProtectedRoute>
+                  <SetupProfile />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/setup-profile" 
+              element={
+                <ProtectedRoute>
+                  <SetupProfile />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* Protected Dashboard Routes */}
+            <Route 
+              path="/employer" 
+              element={
+                <ProtectedRoute>
+                  <EmployerDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/business-dashboard" 
+              element={
+                <ProtectedRoute>
+                  <EmployerDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/recruiter-dashboard" 
+              element={
+                <ProtectedRoute>
+                  <RecruiterDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/individual-dashboard" 
+              element={
+                <ProtectedRoute>
+                  <IndividualDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/candidates" 
+              element={
+                <ProtectedRoute>
+                  <CandidateList />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* Job Posting Routes */}
+            <Route 
+              path="/post-job" 
+              element={
+                <ProtectedRoute>
+                  <PostJob />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* Testing Route */}
+            <Route path="/testing" element={<VectorTesting />} />
+            
+            {/* Fallback */}
+            <Route path="*" element={<HomePage />} />
           </Routes>
         </main>
 
         <Footer />
       </div>
     </Router>
+  )
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   )
 }
 

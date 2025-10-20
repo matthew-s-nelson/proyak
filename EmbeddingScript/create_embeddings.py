@@ -1,4 +1,5 @@
-from law_specialties import specialties
+# from law_specialties import specialties
+from interests import interests
 from sentence_transformers import SentenceTransformer
 from supabase import create_client, Client
 import json
@@ -21,13 +22,13 @@ supabase: Client = create_client(url, key)
 print("Creating embeddings...")
 model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
 
-embeddings = model.encode(specialties, normalize_embeddings=True)
-np.save("specialty_embeddings.npy", embeddings)
+embeddings = model.encode(interests, normalize_embeddings=True)
+np.save("interest_embeddings.npy", embeddings)
 
 print("Inserting embeddings into Supabase...")
-for name, vector in zip(specialties, embeddings):
+for name, vector in zip(interests, embeddings):
     # Convert numpy array to list for JSON
-    response = supabase.table("specialties").insert({
+    response = supabase.table("interests").insert({
         "name": name,
         "embedding": vector.tolist()
     }).execute()
