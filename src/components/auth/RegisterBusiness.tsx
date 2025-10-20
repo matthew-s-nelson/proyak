@@ -209,7 +209,7 @@ const RegisterBusiness: React.FC = () => {
                 value={formData.companyName}
                 onChange={handleChange}
                 required
-                placeholder="Acme Corporation"
+                placeholder="Corporation"
                 style={{
                   width: '100%',
                   padding: '0.75rem',

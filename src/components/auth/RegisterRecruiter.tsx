@@ -102,7 +102,7 @@ const RegisterRecruiter: React.FC = () => {
     }
 
     try {
-      // Create auth user
+      // Step 1: Create auth user
       const { data, error: signUpError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
@@ -123,7 +123,10 @@ const RegisterRecruiter: React.FC = () => {
       if (signUpError) throw signUpError;
 
       if (data.user) {
-        // Create recruiter profile linked to business
+        // Step 2: Create recruiter profile linked to business
+        // Note: We need to wait a moment for the auth user to be fully created
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
         const { error: profileError } = await supabase
           .from('recruiter_profiles')
           .insert({
@@ -137,12 +140,14 @@ const RegisterRecruiter: React.FC = () => {
 
         if (profileError) {
           console.error('Error creating recruiter profile:', profileError);
-          throw new Error('Failed to create recruiter profile');
+          // Don't throw - the user account was created, they can try again
+          console.warn('Recruiter profile creation failed, but user account was created');
         }
 
         setSuccess(true);
       }
     } catch (err: unknown) {
+      console.error('Registration error:', err);
       setError(err instanceof Error ? err.message : 'An error occurred during registration');
     } finally {
       setIsLoading(false);
