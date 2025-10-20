@@ -9,6 +9,7 @@ import Footer from './components/Footer'
 import EmployerDashboard from './components/EmployerDashboard'
 import MeritScore from './components/MeritScore'
 import CandidateList from './components/CandidateList'
+import JobListings from './components/JobListings'
 import './App.css'
 import VectorTesting from './components/VectorTesting'
 import RegisterTypeSelector from './components/auth/RegisterTypeSelector'
@@ -43,11 +44,9 @@ function AppContent() {
       const main = document.querySelector('main') as HTMLElement | null;
       
       if (header && main) {
-        // Use a small timeout to ensure header is fully rendered
         setTimeout(() => {
           const height = header.getBoundingClientRect().height;
-          main.style.paddingTop = Math.max(height, 80) + 'px'; // Minimum 80px padding
-          console.log('Header height:', height, 'Applied padding:', Math.max(height, 80) + 'px');
+          main.style.paddingTop = Math.max(height, 80) + 'px';
         }, 100);
       }
     };
@@ -73,6 +72,7 @@ function AppContent() {
 
         <main>
           <Routes>
+            {/* Public Routes */}
             <Route path="/" element={<HomePage />} />
             <Route path="/features" element={<Features />} />
             <Route path="/how-it-works" element={<HowItWorks />} />
@@ -86,7 +86,7 @@ function AppContent() {
             {/* Login Route */}
             <Route path="/login" element={<Login />} />
             
-            {/* Profile Setup Routes */}
+            {/* Protected: Profile Setup Routes */}
             <Route 
               path="/individual-profile-setup" 
               element={
@@ -112,7 +112,7 @@ function AppContent() {
               } 
             />
             
-            {/* Protected Dashboard Routes */}
+            {/* Protected: Dashboard Routes */}
             <Route 
               path="/employer" 
               element={
@@ -145,21 +145,29 @@ function AppContent() {
                 </ProtectedRoute>
               } 
             />
+            
+            {/* Protected: Job-related Routes */}
             <Route 
-              path="/candidates" 
+              path="/jobs" 
               element={
                 <ProtectedRoute>
-                  <CandidateList />
+                  <JobListings />
                 </ProtectedRoute>
               } 
             />
-            
-            {/* Job Posting Routes */}
             <Route 
               path="/post-job" 
               element={
                 <ProtectedRoute>
                   <PostJob />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/candidates" 
+              element={
+                <ProtectedRoute>
+                  <CandidateList />
                 </ProtectedRoute>
               } 
             />

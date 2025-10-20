@@ -66,9 +66,23 @@ const RegisterBusiness: React.FC = () => {
 
       if (signUpError) throw signUpError;
 
-      if (data.user) {
-        setSuccess(true);
-      }
+        if (data.user) {
+          // ✅ CREATE THE BUSINESS PROFILE
+          const { error: profileError } = await supabase
+            .from('business_profiles')
+            .insert({
+              user_id: data.user.id,
+              company_name: formData.companyName,
+              location: '',
+              industry: ''
+            });
+
+          if (profileError) {
+            console.error('Error creating business profile:', profileError);
+          }
+
+          setSuccess(true);
+        }
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'An error occurred during registration');
     } finally {
