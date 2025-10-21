@@ -29,11 +29,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const getInitialSession = async () => {
       try {
         console.log('Fetching initial session...')
-        const { data } = await supabase.auth.getSession()
-        if (isMounted) setSession(data.session)
-        console.log('Initial session fetched:', data.session)
+        const { data, error } = await supabase.auth.getSession()
+        
+        // If there's a refresh token error, clear the session
+        if (error && error.message.includes('Refresh Token')) {
+          console.warn('Invalid refresh token detected, clearing session...')
+          await supabase.auth.signOut()
+          if (isMounted) setSession(null)
+        } else if (isMounted) {
+          setSession(data.session)
+          console.log('Initial session fetched:', data.session)
+        }
       } catch (err) {
         console.error('Error fetching session:', err)
+        // Clear potentially corrupted session data
+        await supabase.auth.signOut()
+        if (isMounted) setSession(null)
       } finally {
         if (isMounted) setLoading(false)
       }
