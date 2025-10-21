@@ -91,21 +91,25 @@ const SetupProfile: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      // Save profile data to Supabase
-      const { error: insertError } = await supabase
-        .from('profiles')
-        .insert({
+      // Call edge function to create candidate profile
+      const { data, error: functionError } = await supabase.functions.invoke('create-candidate-profile', {
+        body: {
           user_id: user?.id,
           specialty_id: selectedSpecialty.id,
-          interest_ids: selectedInterests.map(i => i.id),
           work_type: workType,
           employment_type: employmentType,
           bio: bio.trim() || null,
           location: location.trim() || null,
-        });
+          interest_ids: selectedInterests.map(i => i.id),
+        }
+      });
 
-      if (insertError) {
-        throw insertError;
+      if (functionError) {
+        throw functionError;
+      }
+
+      if (data?.error) {
+        throw new Error(data.error);
       }
 
       // Navigate to dashboard or home
