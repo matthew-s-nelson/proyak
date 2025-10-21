@@ -114,9 +114,9 @@ const SetupProfile: React.FC = () => {
 
       // Navigate to dashboard or home
       navigate('/dashboard');
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error saving profile:', err);
-      setError(err.message || 'Failed to save profile. Please try again.');
+      setError(err instanceof Error ? err.message : 'Failed to save profile. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
