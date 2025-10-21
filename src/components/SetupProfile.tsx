@@ -40,6 +40,23 @@ const SetupProfile: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
 
+  const getUserName = () => {
+    if (!user) return 'User';
+    
+    if (user.user_metadata?.full_name) {
+      return user.user_metadata.full_name;
+    }
+    if (user.user_metadata?.name) {
+      return user.user_metadata.name;
+    }
+    
+    if (user.email) {
+      return user.email.split('@')[0];
+    }
+    
+    return 'User';
+  };
+
   const handleSpecialtySelect = (specialty: Specialty) => {
     setSelectedSpecialty(specialty);
   };
@@ -117,7 +134,7 @@ const SetupProfile: React.FC = () => {
           fontWeight: '600',
           margin: '0 0 1.5rem 0'
         }}>
-          Tell us about yourself
+          Welcome {getUserName()}! Tell us about yourself
         </h1>
         <p style={{
           fontSize: '1.1rem',
