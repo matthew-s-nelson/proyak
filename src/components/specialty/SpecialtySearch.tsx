@@ -5,7 +5,7 @@ import AutocompleteSearch from '../shared/AutocompleteSearch';
 interface Specialty {
   id: number;
   name: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 interface SpecialtySearchProps {

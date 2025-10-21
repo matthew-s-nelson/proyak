@@ -54,7 +54,7 @@ const RegisterIndividual: React.FC = () => {
         email: formData.email,
         password: formData.password,
         options: {
-          emailRedirectTo: `${window.location.origin}/#/individual-profile-setup`,
+          emailRedirectTo: `${window.location.origin}/#/setup-profile`,
           data: {
             first_name: formData.firstName,
             last_name: formData.lastName,
