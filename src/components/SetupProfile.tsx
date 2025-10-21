@@ -37,6 +37,8 @@ const SetupProfile: React.FC = () => {
   const [selectedInterests, setSelectedInterests] = useState<Interest[]>([]);
   const [workType, setWorkType] = useState<WorkTypeValue>(WorkType.REMOTE);
   const [employmentType, setEmploymentType] = useState<EmploymentTypeValue>(EmploymentType.FULL_TIME);
+  const [bio, setBio] = useState<string>('');
+  const [location, setLocation] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
 
@@ -98,6 +100,8 @@ const SetupProfile: React.FC = () => {
           interest_ids: selectedInterests.map(i => i.id),
           work_type: workType,
           employment_type: employmentType,
+          bio: bio.trim() || null,
+          location: location.trim() || null,
         });
 
       if (insertError) {
@@ -148,7 +152,6 @@ const SetupProfile: React.FC = () => {
           these answers will help us pair you with compatible companies.
         </p>
       </div>
-
       {/* Form Section */}
       <div style={{
         backgroundColor: 'white',
@@ -160,6 +163,40 @@ const SetupProfile: React.FC = () => {
         margin: '0 auto'
       }}>
         <form onSubmit={handleSubmit}>
+          {/* Location */}
+          <div style={{ marginBottom: '2rem' }}>
+            <h3 style={{
+              fontSize: '1.1rem',
+              color: '#333',
+              margin: '0 0 1rem 0',
+              textAlign: 'center',
+              fontWeight: '500'
+            }}>
+              Location
+            </h3>
+            <input
+              type="text"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              placeholder="e.g., San Francisco, CA"
+              style={{
+                width: '100%',
+                padding: '0.75rem',
+                border: '1px solid #ddd',
+                borderRadius: '8px',
+                fontSize: '1rem',
+                boxSizing: 'border-box',
+                transition: 'border-color 0.2s',
+                outline: 'none'
+              }}
+              onFocus={(e) => {
+                e.currentTarget.style.borderColor = '#667eea';
+              }}
+              onBlur={(e) => {
+                e.currentTarget.style.borderColor = '#ddd';
+              }}
+            />
+          </div>
           {/* Work Type Preferences Section */}
           <h2 style={{
             fontSize: '1.5rem',
@@ -373,6 +410,44 @@ const SetupProfile: React.FC = () => {
                 </span>
               ))}
             </div>
+          </div>
+
+
+          {/* Bio */}
+          <div style={{ marginBottom: '2rem' }}>
+            <h3 style={{
+              fontSize: '1.1rem',
+              color: '#333',
+              margin: '0 0 1rem 0',
+              textAlign: 'center',
+              fontWeight: '500'
+            }}>
+              About You
+            </h3>
+            <textarea
+              value={bio}
+              onChange={(e) => setBio(e.target.value)}
+              placeholder="Tell us a little about yourself as a candidate..."
+              rows={4}
+              style={{
+                width: '100%',
+                padding: '0.75rem',
+                border: '1px solid #ddd',
+                borderRadius: '8px',
+                fontSize: '1rem',
+                boxSizing: 'border-box',
+                resize: 'vertical',
+                fontFamily: 'inherit',
+                transition: 'border-color 0.2s',
+                outline: 'none'
+              }}
+              onFocus={(e) => {
+                e.currentTarget.style.borderColor = '#667eea';
+              }}
+              onBlur={(e) => {
+                e.currentTarget.style.borderColor = '#ddd';
+              }}
+            />
           </div>
 
           {/* Error Message */}
