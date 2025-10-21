@@ -74,7 +74,7 @@ Deno.serve(async (req) => {
 
     // Step 2: Insert interests into user_interest pivot table
     const userInterests = interest_ids.map((interest_id: number) => ({
-      user_id,
+      candidate_id: profileData.id,
       interest_id,
     }));
 
