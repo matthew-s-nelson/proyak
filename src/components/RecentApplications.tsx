@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Users } from 'lucide-react';
+import ApplicationDetailsModal from './ApplicationDetailsModal';
 
 export interface RecentApplication {
   id: string;
@@ -22,6 +23,16 @@ const RecentApplications: React.FC<RecentApplicationsProps> = ({
   applications,
   title = 'Recent Applications'
 }) => {
+  const [selectedApplication, setSelectedApplication] = useState<RecentApplication | null>(null);
+
+  const handleApplicationClick = (app: RecentApplication) => {
+    setSelectedApplication(app);
+  };
+
+  const closeModal = () => {
+    setSelectedApplication(null);
+  };
+
   return (
     <div style={{
       backgroundColor: 'white',
@@ -47,13 +58,24 @@ const RecentApplications: React.FC<RecentApplicationsProps> = ({
           {applications.map((app) => (
             <div
               key={app.id}
+              onClick={() => handleApplicationClick(app)}
               style={{
                 border: '1px solid #e5e7eb',
                 borderRadius: '8px',
                 padding: '1rem',
                 display: 'flex',
                 justifyContent: 'space-between',
-                alignItems: 'center'
+                alignItems: 'center',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#f9fafb';
+                e.currentTarget.style.borderColor = '#d1d5db';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'white';
+                e.currentTarget.style.borderColor = '#e5e7eb';
               }}
             >
               <div>
@@ -100,6 +122,12 @@ const RecentApplications: React.FC<RecentApplicationsProps> = ({
           </p>
         </div>
       )}
+
+      {/* Application Details Modal */}
+      <ApplicationDetailsModal 
+        application={selectedApplication}
+        onClose={closeModal}
+      />
     </div>
   );
 };
