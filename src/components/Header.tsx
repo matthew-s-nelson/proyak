@@ -20,12 +20,8 @@ const Header: React.FC = () => {
                     {!user ? (
                         // Not logged in - show marketing pages
                         <>
-                            <li>
-                                <NavLink to="/features">Features</NavLink>
-                            </li>
-                            <li>
-                                <NavLink to="/how-it-works">How It Works</NavLink>
-                            </li>
+                        <li> <NavLink to="/">Home</NavLink></li>
+
                             <li>
                                 <NavLink to="/register">Get Started</NavLink>
                             </li>

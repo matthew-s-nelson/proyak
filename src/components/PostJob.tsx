@@ -37,25 +37,38 @@ const PostJob: React.FC = () => {
 
   // Get business_id for current recruiter
   useEffect(() => {
-    const loadRecruiterProfile = async () => {
-      const { data, error } = await supabase
-        .from('recruiter_profiles')
-        .select('business_id')
+  const loadProfile = async () => {
+    // Try recruiter profile first
+    let { data, error } = await supabase
+      .from('recruiter_profiles')
+      .select('business_id')
+      .eq('user_id', user?.id)
+      .single();
+
+    // If not a recruiter, try business profile
+    if (error) {
+      const { data: businessData, error: businessError } = await supabase
+        .from('business_profile')
+        .select('id')
         .eq('user_id', user?.id)
         .single();
 
-      if (error) {
-        console.error('Error loading recruiter profile:', error);
-        setError('You must be a recruiter to post jobs');
+      if (businessError) {
+        console.error('Error loading profile:', businessError);
+        setError('You must be a recruiter or business to post jobs');
       } else {
-        setBusinessId(data?.business_id);
+        setBusinessId(businessData?.id);
       }
-    };
-
-    if (user) {
-      loadRecruiterProfile();
+    } else {
+      setBusinessId(data?.business_id);
     }
-  }, [user]);
+  };
+
+  if (user) {
+    loadProfile();
+  }
+}, [user]);
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;

@@ -53,7 +53,7 @@ const UpdatesSection: React.FC = () => {
       <div className="container">
         <div className="updates-header">
           <h2>Stay Updated on Our Progress</h2>
-          <p>Be the first to know when Proyak launches and get exclusive updates on our development journey</p>
+          <p>Please fill out this form if you'd like to stay updated on our progress!</p>
         </div>
         
         <div className="updates-form-container">
