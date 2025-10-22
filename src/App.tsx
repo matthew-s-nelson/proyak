@@ -19,7 +19,6 @@ import RegisterRecruiter from './components/auth/RegisterRecruiter'
 import Login from './components/auth/Login'
 import IndividualProfileSetup from './components/auth/IndividualProfileSetup'
 import IndividualDashboard from './components/IndividualDashboard'
-import RecruiterDashboard from './components/RecruiterDashboard'
 import PostJob from './components/PostJob'
 import SetupProfile from './components/SetupProfile'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
@@ -133,7 +132,7 @@ function AppContent() {
               path="/recruiter-dashboard" 
               element={
                 <ProtectedRoute>
-                  <RecruiterDashboard />
+                  <EmployerDashboard />
                 </ProtectedRoute>
               } 
             />
