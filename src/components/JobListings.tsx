@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { Briefcase, MapPin, DollarSign, Building2 } from 'lucide-react';
+import JobDetailsPanel from './JobDetailsPanel';
 
 interface JobPosting {
   id: string;
@@ -74,30 +75,9 @@ const JobListings: React.FC = () => {
     }
   };
 
-  const handleApply = async (jobId: string) => {
-    if (!user) return;
-    
-    setApplying(jobId);
-    try {
-      const { error } = await supabase
-        .from('applications')
-        .insert({
-          job_posting_id: jobId,
-          applicant_id: user.id,
-          status: 'reviewing'
-        });
-
-      if (error) throw error;
-
-      // Update applied jobs list
-      setAppliedJobs(prev => new Set([...prev, jobId]));
-      alert('Application submitted successfully!');
-    } catch (err) {
-      console.error('Error applying:', err);
-      alert('Failed to submit application');
-    } finally {
-      setApplying(null);
-    }
+  const handleApply = (jobId: string) => {
+    setAppliedJobs(prev => new Set([...prev, jobId]));
+    setApplying(null);
   };
 
   const formatSalary = (min?: number, max?: number) => {
@@ -299,193 +279,12 @@ const JobListings: React.FC = () => {
 
           {/* Job Details Panel */}
           {selectedJob && (
-            <div style={{
-              backgroundColor: 'white',
-              borderRadius: '12px',
-              padding: '2rem',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-              position: 'sticky',
-              top: '2rem',
-              maxHeight: 'calc(100vh - 4rem)',
-              overflowY: 'auto'
-            }}>
-              <div style={{ marginBottom: '1.5rem' }}>
-                <h2 style={{
-                  fontSize: '1.75rem',
-                  fontWeight: '700',
-                  color: '#1f2937',
-                  marginBottom: '0.75rem'
-                }}>
-                  {selectedJob.title}
-                </h2>
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  color: '#6b7280',
-                  fontSize: '1rem',
-                  marginBottom: '1rem'
-                }}>
-                  <Building2 size={18} />
-                  <span style={{ fontWeight: '600' }}>
-                    {selectedJob.business_profiles?.company_name || 'Company'}
-                  </span>
-                </div>
-
-                <div style={{
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  gap: '0.75rem',
-                  marginBottom: '1.5rem'
-                }}>
-                  {selectedJob.location && (
-                    <div style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.375rem',
-                      padding: '0.5rem 1rem',
-                      backgroundColor: '#f3f4f6',
-                      borderRadius: '6px',
-                      fontSize: '0.875rem'
-                    }}>
-                      <MapPin size={16} />
-                      <span>{selectedJob.location}</span>
-                    </div>
-                  )}
-                  {(selectedJob.salary_min || selectedJob.salary_max) && (
-                    <div style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.375rem',
-                      padding: '0.5rem 1rem',
-                      backgroundColor: '#f3f4f6',
-                      borderRadius: '6px',
-                      fontSize: '0.875rem'
-                    }}>
-                      <DollarSign size={16} />
-                      <span>{formatSalary(selectedJob.salary_min, selectedJob.salary_max)}</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div style={{
-                borderTop: '1px solid #e5e7eb',
-                paddingTop: '1.5rem',
-                marginBottom: '1.5rem'
-              }}>
-                <h3 style={{
-                  fontSize: '1.125rem',
-                  fontWeight: '600',
-                  color: '#1f2937',
-                  marginBottom: '1rem'
-                }}>
-                  Job Description
-                </h3>
-                <p style={{
-                  color: '#4b5563',
-                  lineHeight: '1.7',
-                  whiteSpace: 'pre-wrap'
-                }}>
-                  {selectedJob.description}
-                </p>
-              </div>
-
-              <div style={{
-                borderTop: '1px solid #e5e7eb',
-                paddingTop: '1.5rem',
-                marginBottom: '1.5rem'
-              }}>
-                <h3 style={{
-                  fontSize: '1.125rem',
-                  fontWeight: '600',
-                  color: '#1f2937',
-                  marginBottom: '1rem'
-                }}>
-                  Job Details
-                </h3>
-                <div style={{
-                  display: 'grid',
-                  gap: '0.75rem',
-                  fontSize: '0.875rem'
-                }}>
-                  {selectedJob.work_type && (
-                    <div>
-                      <span style={{ color: '#6b7280' }}>Work Type: </span>
-                      <span style={{ color: '#1f2937', fontWeight: '600', textTransform: 'capitalize' }}>
-                        {selectedJob.work_type}
-                      </span>
-                    </div>
-                  )}
-                  {selectedJob.employment_type && (
-                    <div>
-                      <span style={{ color: '#6b7280' }}>Employment: </span>
-                      <span style={{ color: '#1f2937', fontWeight: '600', textTransform: 'capitalize' }}>
-                        {selectedJob.employment_type}
-                      </span>
-                    </div>
-                  )}
-                  {selectedJob.experience_level && (
-                    <div>
-                      <span style={{ color: '#6b7280' }}>Experience: </span>
-                      <span style={{ color: '#1f2937', fontWeight: '600', textTransform: 'capitalize' }}>
-                        {selectedJob.experience_level}
-                      </span>
-                    </div>
-                  )}
-                  <div>
-                    <span style={{ color: '#6b7280' }}>Posted: </span>
-                    <span style={{ color: '#1f2937', fontWeight: '600' }}>
-                      {new Date(selectedJob.created_at).toLocaleDateString('en-US', {
-                        month: 'short',
-                        day: 'numeric',
-                        year: 'numeric'
-                      })}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Apply Button */}
-              <button
-                onClick={() => handleApply(selectedJob.id)}
-                disabled={appliedJobs.has(selectedJob.id) || applying === selectedJob.id}
-                style={{
-                  width: '100%',
-                  padding: '1rem',
-                  background: appliedJobs.has(selectedJob.id) 
-                    ? '#d1d5db' 
-                    : applying === selectedJob.id
-                    ? '#9ca3af'
-                    : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '8px',
-                  fontSize: '16px',
-                  fontWeight: '600',
-                  cursor: appliedJobs.has(selectedJob.id) || applying === selectedJob.id 
-                    ? 'not-allowed' 
-                    : 'pointer',
-                  transition: 'transform 0.2s'
-                }}
-                onMouseEnter={(e) => {
-                  if (!appliedJobs.has(selectedJob.id) && applying !== selectedJob.id) {
-                    e.currentTarget.style.transform = 'translateY(-2px)';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!appliedJobs.has(selectedJob.id) && applying !== selectedJob.id) {
-                    e.currentTarget.style.transform = 'translateY(0)';
-                  }
-                }}
-              >
-                {appliedJobs.has(selectedJob.id) 
-                  ? 'Already Applied' 
-                  : applying === selectedJob.id
-                  ? 'Submitting...'
-                  : 'Apply Now'}
-              </button>
-            </div>
+            <JobDetailsPanel
+              job={selectedJob}
+              isApplied={appliedJobs.has(selectedJob.id)}
+              isApplying={applying === selectedJob.id}
+              onApply={handleApply}
+            />
           )}
         </div>
       </div>
