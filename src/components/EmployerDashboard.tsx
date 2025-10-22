@@ -110,7 +110,8 @@ const EmployerDashboard: React.FC = () => {
               title,
               business_id
             ),
-            profiles (
+            candidate_profiles (
+              id,
               user_id
             )
           `)

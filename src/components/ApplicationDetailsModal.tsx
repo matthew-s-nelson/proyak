@@ -1,6 +1,16 @@
-import React from 'react';
-import { X } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, ChevronDown, ChevronUp } from 'lucide-react';
 import type { RecentApplication } from './RecentApplications';
+import { supabase } from '../lib/supabase';
+
+interface CandidateProfile {
+  id: string;
+  specialty_id: string | null;
+  work_type: string | null;
+  employment_type: string | null;
+  location: string | null;
+  bio: string | null;
+}
 
 interface ApplicationDetailsModalProps {
   application: RecentApplication | null;
@@ -11,6 +21,40 @@ const ApplicationDetailsModal: React.FC<ApplicationDetailsModalProps> = ({
   application,
   onClose
 }) => {
+  const [candidateProfile, setCandidateProfile] = useState<CandidateProfile | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [showBio, setShowBio] = useState(false);
+
+  useEffect(() => {
+    if (!application?.candidate_profiles?.id) {
+      setCandidateProfile(null);
+      return;
+    }
+
+    const fetchCandidateProfile = async () => {
+      setLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('candidate_profiles')
+          .select('id, specialty_id, work_type, employment_type, location, bio')
+          .eq('id', application.candidate_profiles.id)
+          .single();
+
+        if (error) {
+          console.error('Error fetching candidate profile:', error);
+        } else {
+          setCandidateProfile(data);
+        }
+      } catch (err) {
+        console.error('Error:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCandidateProfile();
+  }, [application?.candidate_profiles?.id]);
+
   if (!application) return null;
 
   return (
@@ -108,30 +152,6 @@ const ApplicationDetailsModal: React.FC<ApplicationDetailsModalProps> = ({
             </div>
           </div>
 
-          {/* Application ID */}
-          <div>
-            <div style={{
-              fontSize: '0.875rem',
-              fontWeight: '600',
-              color: '#6b7280',
-              marginBottom: '0.5rem',
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em'
-            }}>
-              Application ID
-            </div>
-            <div style={{
-              fontSize: '0.875rem',
-              color: '#374151',
-              fontFamily: 'monospace',
-              backgroundColor: '#f3f4f6',
-              padding: '0.5rem',
-              borderRadius: '4px'
-            }}>
-              {application.id}
-            </div>
-          </div>
-
           {/* Status */}
           <div>
             <div style={{
@@ -204,9 +224,181 @@ const ApplicationDetailsModal: React.FC<ApplicationDetailsModalProps> = ({
               padding: '0.5rem',
               borderRadius: '4px'
             }}>
-              {application.profiles?.user_id || 'N/A'}
+              {application.candidate_profiles?.user_id || 'N/A'}
             </div>
           </div>
+
+          {/* Candidate Profile Section */}
+          {loading && (
+            <div style={{
+              padding: '1rem',
+              textAlign: 'center',
+              color: '#6b7280'
+            }}>
+              Loading candidate profile...
+            </div>
+          )}
+
+          {!loading && candidateProfile && (
+            <>
+              <div style={{
+                borderTop: '2px solid #e5e7eb',
+                margin: '1rem 0',
+                paddingTop: '1rem'
+              }}>
+                <h4 style={{
+                  fontSize: '1.125rem',
+                  fontWeight: '700',
+                  color: '#1f2937',
+                  marginBottom: '1rem'
+                }}>
+                  Candidate Profile
+                </h4>
+              </div>
+
+              {/* Specialty */}
+              {candidateProfile.specialty_id && (
+                <div>
+                  <div style={{
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    color: '#6b7280',
+                    marginBottom: '0.5rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em'
+                  }}>
+                    Specialty
+                  </div>
+                  <div style={{
+                    fontSize: '1rem',
+                    color: '#374151'
+                  }}>
+                    {candidateProfile.specialty_id}
+                  </div>
+                </div>
+              )}
+
+              {/* Work Type */}
+              {candidateProfile.work_type && (
+                <div>
+                  <div style={{
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    color: '#6b7280',
+                    marginBottom: '0.5rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em'
+                  }}>
+                    Work Type
+                  </div>
+                  <div style={{
+                    fontSize: '1rem',
+                    color: '#374151',
+                    textTransform: 'capitalize'
+                  }}>
+                    {candidateProfile.work_type}
+                  </div>
+                </div>
+              )}
+
+              {/* Employment Type */}
+              {candidateProfile.employment_type && (
+                <div>
+                  <div style={{
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    color: '#6b7280',
+                    marginBottom: '0.5rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em'
+                  }}>
+                    Employment Type
+                  </div>
+                  <div style={{
+                    fontSize: '1rem',
+                    color: '#374151',
+                    textTransform: 'capitalize'
+                  }}>
+                    {candidateProfile.employment_type}
+                  </div>
+                </div>
+              )}
+
+              {/* Location */}
+              {candidateProfile.location && (
+                <div>
+                  <div style={{
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    color: '#6b7280',
+                    marginBottom: '0.5rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em'
+                  }}>
+                    Location
+                  </div>
+                  <div style={{
+                    fontSize: '1rem',
+                    color: '#374151'
+                  }}>
+                    {candidateProfile.location}
+                  </div>
+                </div>
+              )}
+
+              {/* Bio - Collapsible */}
+              {candidateProfile.bio && (
+                <div>
+                  <button
+                    onClick={() => setShowBio(!showBio)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      width: '100%',
+                      padding: '0.75rem',
+                      backgroundColor: '#f9fafb',
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      fontSize: '0.875rem',
+                      fontWeight: '600',
+                      color: '#374151',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = '#f3f4f6';
+                      e.currentTarget.style.borderColor = '#d1d5db';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = '#f9fafb';
+                      e.currentTarget.style.borderColor = '#e5e7eb';
+                    }}
+                  >
+                    <span>Bio</span>
+                    {showBio ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                  </button>
+                  
+                  {showBio && (
+                    <div style={{
+                      marginTop: '0.75rem',
+                      padding: '1rem',
+                      backgroundColor: '#f9fafb',
+                      borderRadius: '8px',
+                      fontSize: '0.9375rem',
+                      color: '#374151',
+                      lineHeight: '1.6',
+                      whiteSpace: 'pre-wrap'
+                    }}>
+                      {candidateProfile.bio}
+                    </div>
+                  )}
+                </div>
+              )}
+            </>
+          )}
         </div>
       </div>
     </div>

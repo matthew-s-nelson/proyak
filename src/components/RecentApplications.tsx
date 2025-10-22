@@ -6,7 +6,8 @@ export interface RecentApplication {
   id: string;
   status: string;
   applied_at: string;
-  profiles: {
+  candidate_profiles: {
+    id: string;
     user_id: string;
   };
   job_postings: {
