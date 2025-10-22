@@ -217,7 +217,7 @@ const EmployerDashboardView: React.FC<EmployerDashboardViewProps> = ({
             }}>
               Your Job Postings
             </h2>
-            <button style={{
+            <a href="#/post-job" style={{
               background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)',
               color: 'white',
               padding: '0.625rem 1.25rem',
@@ -225,10 +225,10 @@ const EmployerDashboardView: React.FC<EmployerDashboardViewProps> = ({
               borderRadius: '8px',
               fontSize: '0.875rem',
               fontWeight: '600',
-              cursor: 'pointer'
+              cursor: 'pointer',
             }}>
               + Post New Job
-            </button>
+            </a>
           </div>
 
           {jobPostings.length > 0 ? (
