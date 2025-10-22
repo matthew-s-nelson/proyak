@@ -5,7 +5,9 @@ import { supabase } from '../lib/supabase';
 
 interface CandidateProfile {
   id: string;
-  specialty_id: string | null;
+  specialties: {
+    name: string | null;
+  };
   work_type: string | null;
   employment_type: string | null;
   location: string | null;
@@ -36,7 +38,7 @@ const ApplicationDetailsModal: React.FC<ApplicationDetailsModalProps> = ({
       try {
         const { data, error } = await supabase
           .from('candidate_profiles')
-          .select('id, specialty_id, work_type, employment_type, location, bio')
+          .select('id, specialties(name), work_type, employment_type, location, bio')
           .eq('id', application.candidate_profiles.id)
           .single();
 
@@ -257,7 +259,7 @@ const ApplicationDetailsModal: React.FC<ApplicationDetailsModalProps> = ({
               </div>
 
               {/* Specialty */}
-              {candidateProfile.specialty_id && (
+              {candidateProfile.specialties && (
                 <div>
                   <div style={{
                     fontSize: '0.875rem',
@@ -273,7 +275,7 @@ const ApplicationDetailsModal: React.FC<ApplicationDetailsModalProps> = ({
                     fontSize: '1rem',
                     color: '#374151'
                   }}>
-                    {candidateProfile.specialty_id}
+                    {candidateProfile.specialties.name}
                   </div>
                 </div>
               )}
