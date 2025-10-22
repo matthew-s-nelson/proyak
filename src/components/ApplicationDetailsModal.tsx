@@ -7,7 +7,7 @@ interface CandidateProfile {
   id: string;
   specialties: {
     name: string | null;
-  };
+  } | null;
   work_type: string | null;
   employment_type: string | null;
   location: string | null;
@@ -45,7 +45,14 @@ const ApplicationDetailsModal: React.FC<ApplicationDetailsModalProps> = ({
         if (error) {
           console.error('Error fetching candidate profile:', error);
         } else {
-          setCandidateProfile(data);
+          // Handle the case where specialties is returned as an array
+          const profileData = data as any;
+          setCandidateProfile({
+            ...profileData,
+            specialties: Array.isArray(profileData.specialties) 
+              ? profileData.specialties[0] 
+              : profileData.specialties
+          });
         }
       } catch (err) {
         console.error('Error:', err);
@@ -133,7 +140,7 @@ const ApplicationDetailsModal: React.FC<ApplicationDetailsModalProps> = ({
           flexDirection: 'column',
           gap: '1.5rem'
         }}>
-          {/* Job Title */}
+          {/* Job Title - Full Width */}
           <div>
             <div style={{
               fontSize: '0.875rem',
@@ -154,79 +161,62 @@ const ApplicationDetailsModal: React.FC<ApplicationDetailsModalProps> = ({
             </div>
           </div>
 
-          {/* Status */}
-          <div>
-            <div style={{
-              fontSize: '0.875rem',
-              fontWeight: '600',
-              color: '#6b7280',
-              marginBottom: '0.5rem',
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em'
-            }}>
-              Status
+          {/* Two Column Grid for Status and Applied Date */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: '1.5rem'
+          }}>
+            {/* Status */}
+            <div>
+              <div style={{
+                fontSize: '0.875rem',
+                fontWeight: '600',
+                color: '#6b7280',
+                marginBottom: '0.5rem',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em'
+              }}>
+                Status
+              </div>
+              <span style={{
+                display: 'inline-block',
+                padding: '0.5rem 1rem',
+                backgroundColor: '#f3f4f6',
+                color: '#374151',
+                borderRadius: '6px',
+                fontSize: '0.875rem',
+                fontWeight: '500',
+                textTransform: 'capitalize'
+              }}>
+                {application.status}
+              </span>
             </div>
-            <span style={{
-              display: 'inline-block',
-              padding: '0.5rem 1rem',
-              backgroundColor: '#f3f4f6',
-              color: '#374151',
-              borderRadius: '6px',
-              fontSize: '0.875rem',
-              fontWeight: '500',
-              textTransform: 'capitalize'
-            }}>
-              {application.status}
-            </span>
-          </div>
 
-          {/* Applied Date */}
-          <div>
-            <div style={{
-              fontSize: '0.875rem',
-              fontWeight: '600',
-              color: '#6b7280',
-              marginBottom: '0.5rem',
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em'
-            }}>
-              Applied Date
-            </div>
-            <div style={{
-              fontSize: '1rem',
-              color: '#374151'
-            }}>
-              {new Date(application.applied_at).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-              })}
-            </div>
-          </div>
-
-          {/* User ID */}
-          <div>
-            <div style={{
-              fontSize: '0.875rem',
-              fontWeight: '600',
-              color: '#6b7280',
-              marginBottom: '0.5rem',
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em'
-            }}>
-              Applicant ID
-            </div>
-            <div style={{
-              fontSize: '0.875rem',
-              color: '#374151',
-              fontFamily: 'monospace',
-              backgroundColor: '#f3f4f6',
-              padding: '0.5rem',
-              borderRadius: '4px'
-            }}>
-              {application.candidate_profiles?.user_id || 'N/A'}
+            {/* Applied Date */}
+            <div>
+              <div style={{
+                fontSize: '0.875rem',
+                fontWeight: '600',
+                color: '#6b7280',
+                marginBottom: '0.5rem',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em'
+              }}>
+                Applied Date
+              </div>
+              <div style={{
+                fontSize: '1rem',
+                color: '#374151'
+              }}>
+                {new Date(application.applied_at).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })}
+              </div>
             </div>
           </div>
 
@@ -258,97 +248,104 @@ const ApplicationDetailsModal: React.FC<ApplicationDetailsModalProps> = ({
                 </h4>
               </div>
 
-              {/* Specialty */}
-              {candidateProfile.specialties && (
-                <div>
-                  <div style={{
-                    fontSize: '0.875rem',
-                    fontWeight: '600',
-                    color: '#6b7280',
-                    marginBottom: '0.5rem',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.05em'
-                  }}>
-                    Specialty
+              {/* Two Column Grid for Specialty, Work Type, Employment Type, Location */}
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr 1fr',
+                gap: '1.5rem'
+              }}>
+                {/* Specialty */}
+                {candidateProfile.specialties && (
+                  <div>
+                    <div style={{
+                      fontSize: '0.875rem',
+                      fontWeight: '600',
+                      color: '#6b7280',
+                      marginBottom: '0.5rem',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em'
+                    }}>
+                      Specialty
+                    </div>
+                    <div style={{
+                      fontSize: '1rem',
+                      color: '#374151'
+                    }}>
+                      {candidateProfile.specialties?.name || 'N/A'}
+                    </div>
                   </div>
-                  <div style={{
-                    fontSize: '1rem',
-                    color: '#374151'
-                  }}>
-                    {candidateProfile.specialties.name}
-                  </div>
-                </div>
-              )}
+                )}
 
-              {/* Work Type */}
-              {candidateProfile.work_type && (
-                <div>
-                  <div style={{
-                    fontSize: '0.875rem',
-                    fontWeight: '600',
-                    color: '#6b7280',
-                    marginBottom: '0.5rem',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.05em'
-                  }}>
-                    Work Type
+                {/* Work Type */}
+                {candidateProfile.work_type && (
+                  <div>
+                    <div style={{
+                      fontSize: '0.875rem',
+                      fontWeight: '600',
+                      color: '#6b7280',
+                      marginBottom: '0.5rem',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em'
+                    }}>
+                      Work Type
+                    </div>
+                    <div style={{
+                      fontSize: '1rem',
+                      color: '#374151',
+                      textTransform: 'capitalize'
+                    }}>
+                      {candidateProfile.work_type}
+                    </div>
                   </div>
-                  <div style={{
-                    fontSize: '1rem',
-                    color: '#374151',
-                    textTransform: 'capitalize'
-                  }}>
-                    {candidateProfile.work_type}
-                  </div>
-                </div>
-              )}
+                )}
 
-              {/* Employment Type */}
-              {candidateProfile.employment_type && (
-                <div>
-                  <div style={{
-                    fontSize: '0.875rem',
-                    fontWeight: '600',
-                    color: '#6b7280',
-                    marginBottom: '0.5rem',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.05em'
-                  }}>
-                    Employment Type
+                {/* Employment Type */}
+                {candidateProfile.employment_type && (
+                  <div>
+                    <div style={{
+                      fontSize: '0.875rem',
+                      fontWeight: '600',
+                      color: '#6b7280',
+                      marginBottom: '0.5rem',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em'
+                    }}>
+                      Employment Type
+                    </div>
+                    <div style={{
+                      fontSize: '1rem',
+                      color: '#374151',
+                      textTransform: 'capitalize'
+                    }}>
+                      {candidateProfile.employment_type}
+                    </div>
                   </div>
-                  <div style={{
-                    fontSize: '1rem',
-                    color: '#374151',
-                    textTransform: 'capitalize'
-                  }}>
-                    {candidateProfile.employment_type}
-                  </div>
-                </div>
-              )}
+                )}
 
-              {/* Location */}
-              {candidateProfile.location && (
-                <div>
-                  <div style={{
-                    fontSize: '0.875rem',
-                    fontWeight: '600',
-                    color: '#6b7280',
-                    marginBottom: '0.5rem',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.05em'
-                  }}>
-                    Location
+                {/* Location */}
+                {candidateProfile.location && (
+                  <div>
+                    <div style={{
+                      fontSize: '0.875rem',
+                      fontWeight: '600',
+                      color: '#6b7280',
+                      marginBottom: '0.5rem',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em'
+                    }}>
+                      Location
+                    </div>
+                    <div style={{
+                      fontSize: '1rem',
+                      color: '#374151'
+                    }}>
+                      {candidateProfile.location}
+                    </div>
                   </div>
-                  <div style={{
-                    fontSize: '1rem',
-                    color: '#374151'
-                  }}>
-                    {candidateProfile.location}
-                  </div>
-                </div>
-              )}
+                )}
+              </div>
 
-              {/* Bio - Collapsible */}
+              {/* Bio - Collapsible - Full Width */}
               {candidateProfile.bio && (
                 <div>
                   <button
