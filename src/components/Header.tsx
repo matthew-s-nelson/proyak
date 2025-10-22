@@ -44,11 +44,7 @@ const Header: React.FC = () => {
                         // Business or Recruiter - show hiring tools
                         <>
                             <li>
-                                <NavLink to={
-                                    userType === 'business' 
-                                        ? '/business-dashboard' 
-                                        : '/recruiter-dashboard'
-                                }>
+                                <NavLink to={'/recruiter-dashboard'}>
                                     Dashboard
                                 </NavLink>
                             </li>
