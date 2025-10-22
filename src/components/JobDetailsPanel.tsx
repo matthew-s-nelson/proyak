@@ -80,12 +80,22 @@ const JobDetailsPanel: React.FC<JobDetailsPanelProps> = ({
         coverLetterPath = coverLetterUploadData.path;
       }
 
+      // Get candidate profile ID
+      const { data: candidateProfile, error: candidateError } = await supabase
+      .from('candidate_profiles')
+      .select('id')
+      .eq('user_id', user.id)
+      .single();
+      
+      if (candidateError) throw candidateError;
+      
       // Create application with resume URL and optional cover letter URL
       const { error } = await supabase
         .from('applications')
         .insert({
           job_posting_id: job.id,
           applicant_id: user.id,
+          candidate_id: candidateProfile.id,
           status: 'reviewing',
           resume_url: resumeUploadData.path,
           cover_letter_url: coverLetterPath
