@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import EmployerDashboardView from './EmployerDashboardView';
-import type { JobPosting, RecentApplication } from './EmployerDashboardView';
+import type { JobPosting } from './EmployerDashboardView';
+import type { RecentApplication } from './RecentApplications';
 
 interface BusinessProfile {
   id: string;
