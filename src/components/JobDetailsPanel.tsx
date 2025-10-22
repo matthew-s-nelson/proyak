@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { MapPin, DollarSign, Building2 } from 'lucide-react';
+import FileUpload from './shared/FileUpload';
 
 interface JobPosting {
   id: string;
@@ -35,12 +36,12 @@ const JobDetailsPanel: React.FC<JobDetailsPanelProps> = ({
 }) => {
   const { user } = useAuth();
   const [resumeFile, setResumeFile] = useState<File | null>(null);
-  const [uploadError, setUploadError] = useState<string>('');
+  const [coverLetterFile, setCoverLetterFile] = useState<File | null>(null);
 
-  // Clear resume when job changes
+  // Clear resume and cover letter when job changes
   useEffect(() => {
     setResumeFile(null);
-    setUploadError('');
+    setCoverLetterFile(null);
   }, [job.id]);
 
   const formatSalary = (min?: number, max?: number) => {
@@ -50,65 +51,50 @@ const JobDetailsPanel: React.FC<JobDetailsPanelProps> = ({
     return `Up to $${(max!/1000).toFixed(0)}k`;
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    setUploadError('');
-
-    if (!file) {
-      setResumeFile(null);
-      return;
-    }
-
-    // Validate file type
-    if (file.type !== 'application/pdf') {
-      setUploadError('Please upload a PDF file');
-      setResumeFile(null);
-      return;
-    }
-
-    // Validate file size (e.g., max 1MB)
-    const maxSize = 1 * 1024 * 1024; // 1MB in bytes
-    if (file.size > maxSize) {
-      setUploadError('File size must be less than 1MB');
-      setResumeFile(null);
-      return;
-    }
-
-    setResumeFile(file);
-  };
-
   const handleApplyClick = async () => {
     if (!user) return;
 
     if (!resumeFile) {
-      setUploadError('Please upload your resume to apply');
+      alert('Please upload your resume to apply');
       return;
     }
 
-    setUploadError('');
-
     try {
       // Upload resume to Supabase Storage
-      const fileName = `${user.id}/${job.id}/${Date.now()}_${resumeFile.name}`;
-      const { data: uploadData, error: uploadError } = await supabase.storage
+      const resumeFileName = `${user.id}/${job.id}/${Date.now()}_${resumeFile.name}`;
+      const { data: resumeUploadData, error: resumeUploadError } = await supabase.storage
         .from('resumes')
-        .upload(fileName, resumeFile);
+        .upload(resumeFileName, resumeFile);
 
-      if (uploadError) throw uploadError;
+      if (resumeUploadError) throw resumeUploadError;
 
-      // Create application with resume URL
+      // Upload cover letter if provided
+      let coverLetterPath: string | null = null;
+      if (coverLetterFile) {
+        const coverLetterFileName = `${user.id}/${job.id}/${Date.now()}_${coverLetterFile.name}`;
+        const { data: coverLetterUploadData, error: coverLetterUploadError } = await supabase.storage
+          .from('cover-letters')
+          .upload(coverLetterFileName, coverLetterFile);
+
+        if (coverLetterUploadError) throw coverLetterUploadError;
+        coverLetterPath = coverLetterUploadData.path;
+      }
+
+      // Create application with resume URL and optional cover letter URL
       const { error } = await supabase
         .from('applications')
         .insert({
           job_posting_id: job.id,
           applicant_id: user.id,
           status: 'reviewing',
-          resume_url: uploadData.path
+          resume_url: resumeUploadData.path,
+          cover_letter_url: coverLetterPath
         });
 
       if (error) throw error;
 
       setResumeFile(null);
+      setCoverLetterFile(null);
       onApply(job.id);
       alert('Application submitted successfully!');
     } catch (err) {
@@ -265,102 +251,25 @@ const JobDetailsPanel: React.FC<JobDetailsPanelProps> = ({
         </div>
       </div>
 
-      {/* Resume Upload Section */}
+      {/* Resume Upload */}
       {!isApplied && (
-        <div style={{
-          borderTop: '1px solid #e5e7eb',
-          paddingTop: '1.5rem',
-          marginBottom: '1.5rem'
-        }}>
-          <h3 style={{
-            fontSize: '1.125rem',
-            fontWeight: '600',
-            color: '#1f2937',
-            marginBottom: '0.5rem'
-          }}>
-            Upload Resume
-          </h3>
-          <p style={{
-            fontSize: '0.875rem',
-            color: '#6b7280',
-            marginBottom: '1rem'
-          }}>
-            Please upload your resume (PDF only, max 1MB)
-          </p>
+        <FileUpload
+          label="Upload Resume"
+          description="Please upload your resume (PDF only, max 1MB)"
+          file={resumeFile}
+          onFileChange={setResumeFile}
+          required
+        />
+      )}
 
-          <div style={{ position: 'relative' }}>
-            <input
-              type="file"
-              accept="application/pdf"
-              onChange={handleFileChange}
-              style={{
-                display: 'block',
-                width: '100%',
-                padding: '0.75rem',
-                border: '2px dashed #d1d5db',
-                borderRadius: '8px',
-                fontSize: '0.875rem',
-                cursor: 'pointer',
-                backgroundColor: '#f9fafb',
-                transition: 'border-color 0.2s'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = '#667eea';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = '#d1d5db';
-              }}
-            />
-            {resumeFile && (
-              <div style={{
-                marginTop: '0.75rem',
-                padding: '0.75rem',
-                backgroundColor: '#f0fdf4',
-                border: '1px solid #86efac',
-                borderRadius: '6px',
-                fontSize: '0.875rem',
-                color: '#16a34a',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between'
-              }}>
-                <span>
-                  ✓ {resumeFile.name} ({(resumeFile.size / 1024).toFixed(1)} KB)
-                </span>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setResumeFile(null);
-                    setUploadError('');
-                  }}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    color: '#16a34a',
-                    cursor: 'pointer',
-                    fontSize: '1.25rem',
-                    padding: '0 0.5rem'
-                  }}
-                >
-                  ×
-                </button>
-              </div>
-            )}
-            {uploadError && (
-              <div style={{
-                marginTop: '0.75rem',
-                padding: '0.75rem',
-                backgroundColor: '#fef2f2',
-                border: '1px solid #fecaca',
-                borderRadius: '6px',
-                fontSize: '0.875rem',
-                color: '#dc2626'
-              }}>
-                {uploadError}
-              </div>
-            )}
-          </div>
-        </div>
+      {/* Cover Letter Upload */}
+      {!isApplied && (
+        <FileUpload
+          label="Upload Cover Letter"
+          description="Add a cover letter to strengthen your application (PDF only, max 1MB)"
+          file={coverLetterFile}
+          onFileChange={setCoverLetterFile}
+        />
       )}
 
       {/* Apply Button */}
