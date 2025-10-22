@@ -144,7 +144,7 @@ const EmployerDashboard: React.FC = () => {
     );
   }
 
-  const userName = user?.user_metadata?.first_name || user?.email?.split('@')[0] || 'User';
+  const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User';
   const companyName = businessProfile?.company_name || 'Your Company';
   const totalApplications = recentApplications.length;
   const activeJobs = jobPostings.filter(j => j.status === 'active').length;
