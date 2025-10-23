@@ -6,6 +6,8 @@ export interface RecentApplication {
   id: string;
   status: string;
   applied_at: string;
+  resume_url: string | null;
+  cover_letter_url: string | null;
   candidate_profiles: {
     id: string;
     user_id: string;

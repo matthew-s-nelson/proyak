@@ -43,6 +43,10 @@ const ApplicationDetailsModal: React.FC<ApplicationDetailsModalProps> = ({
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(false);
   const [showBio, setShowBio] = useState(false);
+  const [showResume, setShowResume] = useState(false);
+  const [showCoverLetter, setShowCoverLetter] = useState(false);
+  const [resumeSignedUrl, setResumeSignedUrl] = useState<string | null>(null);
+  const [coverLetterSignedUrl, setCoverLetterSignedUrl] = useState<string | null>(null);
 
   useEffect(() => {
     if (!application?.candidate_profiles?.id) {
@@ -73,6 +77,20 @@ const ApplicationDetailsModal: React.FC<ApplicationDetailsModalProps> = ({
               : profileData.specialties
           });
           setUserData(candidateDetails.user);
+
+          const { data: docData, error: docError } = await supabase.functions.invoke('get-document-urls', {
+            body: {
+              resume_url: application.resume_url,
+              cover_letter_url: application.cover_letter_url
+            }
+          });
+
+          if (docError) {
+            console.error('Error fetching document URLs:', docError);
+          } else if (docData) {
+            setResumeSignedUrl(docData.resume_signed_url || null);
+            setCoverLetterSignedUrl(docData.cover_letter_signed_url || null);
+          }
         }
       } catch (err) {
         console.error('Error:', err);
@@ -463,6 +481,90 @@ const ApplicationDetailsModal: React.FC<ApplicationDetailsModalProps> = ({
                       whiteSpace: 'pre-wrap'
                     }}>
                       {candidateProfile.bio}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Resume */}
+              {resumeSignedUrl && (
+                <div style={{ marginTop: '1.5rem' }}>
+                  <button
+                    onClick={() => setShowResume(!showResume)}
+                    style={{
+                      width: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: '0.75rem 1rem',
+                      backgroundColor: '#f3f4f6',
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      fontSize: '0.875rem',
+                      fontWeight: '600',
+                      color: '#374151',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em'
+                    }}
+                  >
+                    <span>Resume</span>
+                    {showResume ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                  </button>
+                  {showResume && (
+                    <div style={{ marginTop: '0.75rem' }}>
+                      <iframe
+                        src={resumeSignedUrl}
+                        style={{
+                          width: '100%',
+                          height: '600px',
+                          border: '1px solid #e5e7eb',
+                          borderRadius: '8px'
+                        }}
+                        title="Resume"
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Cover Letter */}
+              {coverLetterSignedUrl && (
+                <div style={{ marginTop: '1.5rem' }}>
+                  <button
+                    onClick={() => setShowCoverLetter(!showCoverLetter)}
+                    style={{
+                      width: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: '0.75rem 1rem',
+                      backgroundColor: '#f3f4f6',
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      fontSize: '0.875rem',
+                      fontWeight: '600',
+                      color: '#374151',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em'
+                    }}
+                  >
+                    <span>Cover Letter</span>
+                    {showCoverLetter ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                  </button>
+                  {showCoverLetter && (
+                    <div style={{ marginTop: '0.75rem' }}>
+                      <iframe
+                        src={coverLetterSignedUrl}
+                        style={{
+                          width: '100%',
+                          height: '600px',
+                          border: '1px solid #e5e7eb',
+                          borderRadius: '8px'
+                        }}
+                        title="Cover Letter"
+                      />
                     </div>
                   )}
                 </div>
