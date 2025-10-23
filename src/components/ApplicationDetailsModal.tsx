@@ -5,13 +5,29 @@ import { supabase } from '../lib/supabase';
 
 interface CandidateProfile {
   id: string;
+  user_id: string;
   specialties: {
+    id: string;
     name: string | null;
   } | null;
   work_type: string | null;
   employment_type: string | null;
   location: string | null;
   bio: string | null;
+  created_at?: string;
+  updated_at?: string;
+}
+
+interface UserData {
+  id: string;
+  email: string;
+  full_name: string | null;
+  created_at: string;
+}
+
+interface CandidateDetails {
+  candidate_profile: CandidateProfile;
+  user: UserData;
 }
 
 interface ApplicationDetailsModalProps {
@@ -24,35 +40,39 @@ const ApplicationDetailsModal: React.FC<ApplicationDetailsModalProps> = ({
   onClose
 }) => {
   const [candidateProfile, setCandidateProfile] = useState<CandidateProfile | null>(null);
+  const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(false);
   const [showBio, setShowBio] = useState(false);
 
   useEffect(() => {
     if (!application?.candidate_profiles?.id) {
       setCandidateProfile(null);
+      setUserData(null);
       return;
     }
 
-    const fetchCandidateProfile = async () => {
+    const fetchCandidateDetails = async () => {
       setLoading(true);
       try {
-        const { data, error } = await supabase
-          .from('candidate_profiles')
-          .select('id, specialties(name), work_type, employment_type, location, bio')
-          .eq('id', application.candidate_profiles.id)
-          .single();
+        const { data, error } = await supabase.functions.invoke('get-candidate-details', {
+          body: {
+            candidate_profile_id: application.candidate_profiles.id
+          }
+        });
 
         if (error) {
-          console.error('Error fetching candidate profile:', error);
-        } else {
+          console.error('Error fetching candidate details:', error);
+        } else if (data) {
+          const candidateDetails = data as CandidateDetails;
           // Handle the case where specialties is returned as an array
-          const profileData = data as any;
+          const profileData = candidateDetails.candidate_profile;
           setCandidateProfile({
             ...profileData,
             specialties: Array.isArray(profileData.specialties) 
               ? profileData.specialties[0] 
               : profileData.specialties
           });
+          setUserData(candidateDetails.user);
         }
       } catch (err) {
         console.error('Error:', err);
@@ -61,7 +81,7 @@ const ApplicationDetailsModal: React.FC<ApplicationDetailsModalProps> = ({
       }
     };
 
-    fetchCandidateProfile();
+    fetchCandidateDetails();
   }, [application?.candidate_profiles?.id]);
 
   if (!application) return null;
@@ -247,6 +267,57 @@ const ApplicationDetailsModal: React.FC<ApplicationDetailsModalProps> = ({
                   Candidate Profile
                 </h4>
               </div>
+
+              {/* Two Column Grid for Candidate Name and Email */}
+              {userData && (
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr',
+                  gap: '1.5rem'
+                }}>
+                  {/* Candidate Name */}
+                  <div>
+                    <div style={{
+                      fontSize: '0.875rem',
+                      fontWeight: '600',
+                      color: '#6b7280',
+                      marginBottom: '0.5rem',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em'
+                    }}>
+                      Name
+                    </div>
+                    <div style={{
+                      fontSize: '1rem',
+                      color: '#374151',
+                      fontWeight: '500'
+                    }}>
+                      {userData.full_name || 'N/A'}
+                    </div>
+                  </div>
+
+                  {/* Candidate Email */}
+                  <div>
+                    <div style={{
+                      fontSize: '0.875rem',
+                      fontWeight: '600',
+                      color: '#6b7280',
+                      marginBottom: '0.5rem',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em'
+                    }}>
+                      Email
+                    </div>
+                    <div style={{
+                      fontSize: '1rem',
+                      color: '#374151',
+                      wordBreak: 'break-word'
+                    }}>
+                      {userData.email}
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Two Column Grid for Specialty, Work Type, Employment Type, Location */}
               <div style={{
