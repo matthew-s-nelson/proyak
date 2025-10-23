@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import logoImage from "/public/logo.png";
+import logoImage from "../assets/logo.png";
 
 const Hero: React.FC = () => {
     const [formLoaded, setFormLoaded] = useState(false);

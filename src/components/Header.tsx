@@ -1,6 +1,6 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import logoImage from "/logo.png";
+import logoImage from "../assets/logo.png";
 import AuthSection from "./AuthSection";
 import { useAuth } from "../contexts/AuthContext";
 
