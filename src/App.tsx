@@ -23,6 +23,7 @@ import PostJob from './components/PostJob'
 import SetupProfile from './components/SetupProfile'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import ProtectedRoute from './components/ProtectedRoute'
+import RecruiterDashboard from './components/RecruiterDashboard'
 
 function HomePage() {
   return (
@@ -132,7 +133,7 @@ function AppContent() {
               path="/recruiter-dashboard" 
               element={
                 <ProtectedRoute>
-                  <EmployerDashboard />
+                  <RecruiterDashboard />
                 </ProtectedRoute>
               } 
             />

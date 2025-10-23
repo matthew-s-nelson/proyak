@@ -16,7 +16,7 @@ export interface JobPosting {
   };
 }
 
-interface EmployerDashboardViewProps {
+interface RecruiterDashboardViewProps {
   userName: string;
   companyName: string;
   totalJobs: number;
@@ -27,7 +27,7 @@ interface EmployerDashboardViewProps {
   loading: boolean;
 }
 
-const EmployerDashboardView: React.FC<EmployerDashboardViewProps> = ({
+const RecruiterDashboardView: React.FC<RecruiterDashboardViewProps> = ({
   userName,
   companyName,
   totalJobs,
@@ -342,4 +342,4 @@ const EmployerDashboardView: React.FC<EmployerDashboardViewProps> = ({
   );
 };
 
-export default EmployerDashboardView;
+export default RecruiterDashboardView;
