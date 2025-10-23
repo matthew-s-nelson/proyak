@@ -126,7 +126,7 @@ const ApplicationDetailsModal: React.FC<ApplicationDetailsModalProps> = ({
           backgroundColor: 'white',
           borderRadius: '12px',
           padding: '2rem',
-          maxWidth: '600px',
+          maxWidth: '1000px',
           width: '100%',
           maxHeight: '80vh',
           overflow: 'auto',
