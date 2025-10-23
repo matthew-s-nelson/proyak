@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, ChevronDown, ChevronUp } from 'lucide-react';
 import type { RecentApplication } from './RecentApplications';
 import { supabase } from '../lib/supabase';
+import GradientBubble from './shared/GradientBubble';
 
 interface CandidateProfile {
   id: string;
@@ -10,6 +11,10 @@ interface CandidateProfile {
     id: string;
     name: string | null;
   } | null;
+  interests?: Array<{
+    id: string;
+    name: string | null;
+  }>;
   work_type: string | null;
   employment_type: string | null;
   location: string | null;
@@ -38,6 +43,64 @@ interface ApplicationDetailsModalProps {
   application: RecentApplication | null;
   onClose: () => void;
 }
+
+const H4: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <h4 style={{
+    fontSize: '1.25rem',
+    fontWeight: '600',
+    color: '#1f2937',
+    marginBottom: '1rem'
+  }}>
+    {children}
+  </h4>
+);
+
+interface CollapsibleSectionProps {
+  title: string;
+  isOpen: boolean;
+  onToggle: () => void;
+  children: React.ReactNode;
+}
+
+const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({ title, isOpen, onToggle, children }) => (
+  <div style={{ marginTop: '1rem' }}>
+    <button
+      onClick={onToggle}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        width: '100%',
+        padding: '0.875rem 1rem',
+        backgroundColor: '#f9fafb',
+        border: '1px solid #e5e7eb',
+        borderRadius: '8px',
+        cursor: 'pointer',
+        transition: 'all 0.2s ease',
+        fontSize: '0.9375rem',
+        fontWeight: '500',
+        color: '#374151'
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.backgroundColor = '#f3f4f6';
+        e.currentTarget.style.borderColor = '#d1d5db';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.backgroundColor = '#f9fafb';
+        e.currentTarget.style.borderColor = '#e5e7eb';
+      }}
+    >
+      <span><b>{title}</b></span>
+      {isOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+    </button>
+    
+    {isOpen && (
+      <div style={{ marginTop: '0.75rem' }}>
+        {children}
+      </div>
+    )}
+  </div>
+);
 
 const ApplicationDetailsModal: React.FC<ApplicationDetailsModalProps> = ({
   application,
@@ -130,54 +193,66 @@ const ApplicationDetailsModal: React.FC<ApplicationDetailsModalProps> = ({
         style={{
           backgroundColor: 'white',
           borderRadius: '12px',
-          padding: '2rem',
           maxWidth: '1000px',
           width: '100%',
-          maxHeight: '80vh',
-          overflow: 'auto',
+          maxHeight: '90vh',
+          overflow: 'hidden',
           position: 'relative',
           boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          style={{
-            position: 'absolute',
-            top: '1rem',
-            right: '1rem',
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            padding: '0.5rem',
-            borderRadius: '6px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            transition: 'background-color 0.2s ease'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = '#f3f4f6';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = 'transparent';
-          }}
-        >
-          <X size={24} color="#6b7280" />
-        </button>
-
-        {/* Modal Content */}
-        <h3 style={{
-          fontSize: '1.5rem',
-          fontWeight: '700',
-          color: '#1f2937',
-          marginBottom: '1.5rem',
-          paddingRight: '2rem'
+        {/* Header with gradient background */}
+        <div style={{
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          padding: '3rem 2rem',
+          position: 'relative'
         }}>
-          Application Details
-        </h3>
+          {/* Close Button */}
+          <button
+            onClick={onClose}
+            style={{
+              position: 'absolute',
+              top: '1rem',
+              right: '1rem',
+              background: 'rgba(255, 255, 255, 0.2)',
+              border: 'none',
+              cursor: 'pointer',
+              padding: '0.5rem',
+              borderRadius: '6px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'background-color 0.2s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.3)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+            }}
+          >
+            <X size={24} color="white" />
+          </button>
 
+          <h3 style={{
+            fontSize: '2rem',
+            fontWeight: '600',
+            color: 'white',
+            marginBottom: '1rem',
+            paddingRight: '2rem',
+            textAlign: 'center'
+          }}>
+            Application Details
+          </h3>
+        </div>
+
+        {/* Scrollable Content */}
+        <div style={{
+          padding: '2rem',
+          maxHeight: 'calc(90vh - 200px)',
+          overflow: 'auto'
+        }}>
         <div style={{
           display: 'flex',
           flexDirection: 'column',
@@ -276,20 +351,12 @@ const ApplicationDetailsModal: React.FC<ApplicationDetailsModalProps> = ({
 
           {!loading && candidateProfile && (
             <>
+              {/* Section Divider */}
               <div style={{
-                borderTop: '2px solid #e5e7eb',
-                margin: '1rem 0',
-                paddingTop: '1rem'
-              }}>
-                <h4 style={{
-                  fontSize: '1.125rem',
-                  fontWeight: '700',
-                  color: '#1f2937',
-                  marginBottom: '1rem'
-                }}>
-                  Candidate Profile
-                </h4>
-              </div>
+                borderTop: '1px solid #e5e7eb',
+                marginTop: '0.5rem',
+                marginBottom: '1.5rem'
+              }}></div>
 
               {/* Two Column Grid for Candidate Name and Email */}
               {userData && (
@@ -342,277 +409,172 @@ const ApplicationDetailsModal: React.FC<ApplicationDetailsModalProps> = ({
                 </div>
               )}
 
-              {/* Two Column Grid for Specialty, Work Type, Employment Type, Location */}
+              {/* Two Column Layout */}
               <div style={{
                 display: 'grid',
                 gridTemplateColumns: '1fr 1fr',
-                gap: '1.5rem'
+                gap: '2rem',
+                marginTop: '1rem'
               }}>
-                {/* Specialty */}
-                {candidateProfile.specialties && (
-                  <div>
-                    <div style={{
-                      fontSize: '0.875rem',
-                      fontWeight: '600',
-                      color: '#6b7280',
-                      marginBottom: '0.5rem',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.05em'
-                    }}>
-                      Specialty
-                    </div>
-                    <div style={{
-                      fontSize: '1rem',
-                      color: '#374151'
-                    }}>
-                      {candidateProfile.specialties?.name || 'N/A'}
-                    </div>
-                  </div>
-                )}
-
-                {/* Work Type */}
-                {candidateProfile.work_type && (
-                  <div>
-                    <div style={{
-                      fontSize: '0.875rem',
-                      fontWeight: '600',
-                      color: '#6b7280',
-                      marginBottom: '0.5rem',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.05em'
-                    }}>
-                      Work Type
-                    </div>
-                    <div style={{
-                      fontSize: '1rem',
-                      color: '#374151',
-                      textTransform: 'capitalize'
-                    }}>
-                      {candidateProfile.work_type}
-                    </div>
-                  </div>
-                )}
-
-                {/* Employment Type */}
-                {candidateProfile.employment_type && (
-                  <div>
-                    <div style={{
-                      fontSize: '0.875rem',
-                      fontWeight: '600',
-                      color: '#6b7280',
-                      marginBottom: '0.5rem',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.05em'
-                    }}>
-                      Employment Type
-                    </div>
-                    <div style={{
-                      fontSize: '1rem',
-                      color: '#374151',
-                      textTransform: 'capitalize'
-                    }}>
-                      {candidateProfile.employment_type}
-                    </div>
-                  </div>
-                )}
-
-                {/* Location */}
-                {candidateProfile.location && (
-                  <div>
-                    <div style={{
-                      fontSize: '0.875rem',
-                      fontWeight: '600',
-                      color: '#6b7280',
-                      marginBottom: '0.5rem',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.05em'
-                    }}>
-                      Location
-                    </div>
-                    <div style={{
-                      fontSize: '1rem',
-                      color: '#374151'
-                    }}>
-                      {candidateProfile.location}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Interests - Full Width */}
-              {candidateProfile.interests && candidateProfile.interests.length > 0 && (
-                <div style={{ marginTop: '1.5rem' }}>
-                  <div style={{
-                    fontSize: '0.875rem',
-                    fontWeight: '600',
-                    color: '#6b7280',
-                    marginBottom: '0.5rem',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.05em'
-                  }}>
-                    Interests
-                  </div>
-                  <div style={{
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    gap: '0.5rem'
-                  }}>
-                    {candidateProfile.interests.map((interest) => (
-                      <span
-                        key={interest.id}
-                        style={{
-                          padding: '0.5rem 1rem',
-                          backgroundColor: '#e0f2fe',
-                          color: '#0369a1',
-                          borderRadius: '9999px',
-                          fontSize: '0.875rem',
-                          fontWeight: '500'
-                        }}
-                      >
-                        {interest.name}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Bio - Collapsible - Full Width */}
-              {candidateProfile.bio && (
+                {/* Left Column */}
                 <div>
-                  <button
-                    onClick={() => setShowBio(!showBio)}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      width: '100%',
-                      padding: '0.75rem',
-                      backgroundColor: '#f9fafb',
-                      border: '1px solid #e5e7eb',
-                      borderRadius: '8px',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s ease',
-                      fontSize: '0.875rem',
-                      fontWeight: '600',
-                      color: '#374151',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.05em'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = '#f3f4f6';
-                      e.currentTarget.style.borderColor = '#d1d5db';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = '#f9fafb';
-                      e.currentTarget.style.borderColor = '#e5e7eb';
-                    }}
-                  >
-                    <span>Bio</span>
-                    {showBio ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-                  </button>
-                  
-                  {showBio && (
-                    <div style={{
-                      marginTop: '0.75rem',
-                      padding: '1rem',
-                      backgroundColor: '#f9fafb',
-                      borderRadius: '8px',
-                      fontSize: '0.9375rem',
-                      color: '#374151',
-                      lineHeight: '1.6',
-                      whiteSpace: 'pre-wrap'
-                    }}>
-                      {candidateProfile.bio}
+                  {/* Scheduling Label */}
+                  <H4>
+                    Scheduling
+                  </H4>
+
+                  {/* Employment Type as a tag */}
+                  {candidateProfile.employment_type && (
+                    <div style={{ marginBottom: '1.5rem' }}>
+                      <GradientBubble>
+                        {candidateProfile.employment_type}
+                      </GradientBubble>
+                    </div>
+                  )}
+
+                  {/* Work Type Label */}
+                  <H4>
+                    Work Type
+                  </H4>
+
+                  {/* Work Type as a tag */}
+                  {candidateProfile.work_type && (
+                    <div style={{ marginBottom: '1.5rem' }}>
+                      <GradientBubble>
+                        {candidateProfile.work_type}
+                      </GradientBubble>
+                    </div>
+                  )}
+
+                  {/* Location */}
+                  {candidateProfile.location && (
+                    <div style={{ marginBottom: '1.5rem' }}>
+                      <div style={{
+                        fontSize: '0.875rem',
+                        fontWeight: '600',
+                        color: '#6b7280',
+                        marginBottom: '0.5rem',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.05em'
+                      }}>
+                        Location
+                      </div>
+                      <div style={{
+                        fontSize: '1rem',
+                        color: '#374151'
+                      }}>
+                        {candidateProfile.location}
+                      </div>
                     </div>
                   )}
                 </div>
+
+                {/* Right Column - Specialties and Interests */}
+                <div>
+                  {/* Specialties Section Header */}
+                  <H4>
+                    Specialties
+                  </H4>
+
+                  {/* Specialty as a tag */}
+                  {candidateProfile.specialties && (
+                    <div style={{ marginBottom: '1.5rem' }}>
+                      <GradientBubble>
+                        {candidateProfile.specialties?.name || 'N/A'}
+                      </GradientBubble>
+                    </div>
+                  )}
+
+                  {/* Interests Section */}
+                  {candidateProfile.interests && candidateProfile.interests.length > 0 && (
+                    <div style={{ marginTop: '1.5rem' }}>
+                      <h4 style={{
+                        fontSize: '1.25rem',
+                        fontWeight: '600',
+                        color: '#1f2937',
+                        marginBottom: '1rem'
+                      }}>
+                        Interests
+                      </h4>
+                      <div style={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        gap: '0.75rem'
+                      }}>
+                        {candidateProfile.interests.map((interest: any) => (
+                          <GradientBubble key={interest.id}>
+                            {interest.name}
+                          </GradientBubble>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Bio - Collapsible - Full Width */}
+              {candidateProfile.bio && (
+                <CollapsibleSection
+                  title="Candidate Bio"
+                  isOpen={showBio}
+                  onToggle={() => setShowBio(!showBio)}
+                >
+                  <div style={{
+                    padding: '1rem',
+                    backgroundColor: '#f9fafb',
+                    borderRadius: '8px',
+                    fontSize: '0.9375rem',
+                    color: '#374151',
+                    lineHeight: '1.6',
+                    whiteSpace: 'pre-wrap'
+                  }}>
+                    {candidateProfile.bio}
+                  </div>
+                </CollapsibleSection>
               )}
 
               {/* Resume */}
               {resumeSignedUrl && (
-                <div style={{ marginTop: '1.5rem' }}>
-                  <button
-                    onClick={() => setShowResume(!showResume)}
+                <CollapsibleSection
+                  title="Resume"
+                  isOpen={showResume}
+                  onToggle={() => setShowResume(!showResume)}
+                >
+                  <iframe
+                    src={resumeSignedUrl}
                     style={{
                       width: '100%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      padding: '0.75rem 1rem',
-                      backgroundColor: '#f3f4f6',
+                      height: '600px',
                       border: '1px solid #e5e7eb',
-                      borderRadius: '8px',
-                      cursor: 'pointer',
-                      fontSize: '0.875rem',
-                      fontWeight: '600',
-                      color: '#374151',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.05em'
+                      borderRadius: '8px'
                     }}
-                  >
-                    <span>Resume</span>
-                    {showResume ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-                  </button>
-                  {showResume && (
-                    <div style={{ marginTop: '0.75rem' }}>
-                      <iframe
-                        src={resumeSignedUrl}
-                        style={{
-                          width: '100%',
-                          height: '600px',
-                          border: '1px solid #e5e7eb',
-                          borderRadius: '8px'
-                        }}
-                        title="Resume"
-                      />
-                    </div>
-                  )}
-                </div>
+                    title="Resume"
+                  />
+                </CollapsibleSection>
               )}
 
               {/* Cover Letter */}
               {coverLetterSignedUrl && (
-                <div style={{ marginTop: '1.5rem' }}>
-                  <button
-                    onClick={() => setShowCoverLetter(!showCoverLetter)}
+                <CollapsibleSection
+                  title="Cover Letter"
+                  isOpen={showCoverLetter}
+                  onToggle={() => setShowCoverLetter(!showCoverLetter)}
+                >
+                  <iframe
+                    src={coverLetterSignedUrl}
                     style={{
                       width: '100%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      padding: '0.75rem 1rem',
-                      backgroundColor: '#f3f4f6',
+                      height: '600px',
                       border: '1px solid #e5e7eb',
-                      borderRadius: '8px',
-                      cursor: 'pointer',
-                      fontSize: '0.875rem',
-                      fontWeight: '600',
-                      color: '#374151',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.05em'
+                      borderRadius: '8px'
                     }}
-                  >
-                    <span>Cover Letter</span>
-                    {showCoverLetter ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-                  </button>
-                  {showCoverLetter && (
-                    <div style={{ marginTop: '0.75rem' }}>
-                      <iframe
-                        src={coverLetterSignedUrl}
-                        style={{
-                          width: '100%',
-                          height: '600px',
-                          border: '1px solid #e5e7eb',
-                          borderRadius: '8px'
-                        }}
-                        title="Cover Letter"
-                      />
-                    </div>
-                  )}
-                </div>
+                    title="Cover Letter"
+                  />
+                </CollapsibleSection>
               )}
             </>
           )}
+        </div>
         </div>
       </div>
     </div>
