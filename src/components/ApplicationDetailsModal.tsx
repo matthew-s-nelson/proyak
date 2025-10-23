@@ -55,6 +55,36 @@ const H4: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   </h4>
 );
 
+// Helper function to convert work_type number to display string
+const getWorkTypeLabel = (workType: string | null): string => {
+  if (!workType) return 'N/A';
+  const workTypeNum = parseInt(workType, 10);
+  switch (workTypeNum) {
+    case 0:
+      return 'Remote';
+    case 1:
+      return 'On-site';
+    case 2:
+      return 'Hybrid';
+    default:
+      return workType; // Return as-is if it's already a string or unrecognized
+  }
+};
+
+// Helper function to convert employment_type number to display string
+const getEmploymentTypeLabel = (employmentType: string | null): string => {
+  if (!employmentType) return 'N/A';
+  const employmentTypeNum = parseInt(employmentType, 10);
+  switch (employmentTypeNum) {
+    case 0:
+      return 'Full-time';
+    case 1:
+      return 'Part-time';
+    default:
+      return employmentType; // Return as-is if it's already a string or unrecognized
+  }
+};
+
 interface CollapsibleSectionProps {
   title: string;
   isOpen: boolean;
@@ -427,7 +457,7 @@ const ApplicationDetailsModal: React.FC<ApplicationDetailsModalProps> = ({
                   {candidateProfile.employment_type && (
                     <div style={{ marginBottom: '1.5rem' }}>
                       <GradientBubble>
-                        {candidateProfile.employment_type}
+                        {getEmploymentTypeLabel(candidateProfile.employment_type)}
                       </GradientBubble>
                     </div>
                   )}
@@ -441,7 +471,7 @@ const ApplicationDetailsModal: React.FC<ApplicationDetailsModalProps> = ({
                   {candidateProfile.work_type && (
                     <div style={{ marginBottom: '1.5rem' }}>
                       <GradientBubble>
-                        {candidateProfile.work_type}
+                        {getWorkTypeLabel(candidateProfile.work_type)}
                       </GradientBubble>
                     </div>
                   )}
