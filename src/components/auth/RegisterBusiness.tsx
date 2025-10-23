@@ -49,12 +49,19 @@ const RegisterBusiness: React.FC = () => {
       return;
     }
 
+    console.log('=== BUSINESS REGISTRATION START ===');
+    console.log('Company Name:', formData.companyName);
+    console.log('Contact Name:', formData.contactName);
+    console.log('Email:', formData.email);
+
     try {
+      // Step 1: Create auth user
+      console.log('\n--- Creating auth user ---');
       const { data, error: signUpError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {
-          emailRedirectTo: `${window.location.origin}/#/business-profile-setup`,
+          emailRedirectTo: `${window.location.origin}/#/business-dashboard`,
           data: {
             company_name: formData.companyName,
             contact_name: formData.contactName,
@@ -64,26 +71,51 @@ const RegisterBusiness: React.FC = () => {
         }
       });
 
+      console.log('Auth signup result:', { data, signUpError });
+
       if (signUpError) throw signUpError;
 
-        if (data.user) {
-          // ✅ CREATE THE BUSINESS PROFILE
-          const { error: profileError } = await supabase
-            .from('business_profiles')
-            .insert({
-              user_id: data.user.id,
-              company_name: formData.companyName,
-              location: '',
-              industry: ''
-            });
+      if (!data.user) {
+        throw new Error('User creation failed - no user returned');
+      }
 
-          if (profileError) {
-            console.error('Error creating business profile:', profileError);
-          }
+      console.log('✓ User created with ID:', data.user.id);
 
-          setSuccess(true);
-        }
+      // Step 2: Wait a moment for the user to be fully created
+      console.log('\n--- Waiting for user creation to complete ---');
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // Step 3: Create business profile
+      console.log('\n--- Creating business profile ---');
+      
+      const businessProfileData = {
+        user_id: data.user.id,
+        company_name: formData.companyName,
+        location: '', // Will be filled in profile setup
+        industry: ''  // Will be filled in profile setup
+      };
+
+      console.log('Inserting business profile:', businessProfileData);
+
+      const { data: profileData, error: profileError } = await supabase
+        .from('business_profiles')
+        .insert(businessProfileData)
+        .select()
+        .single();
+
+      console.log('Business profile insert result:', { profileData, profileError });
+
+      if (profileError) {
+        console.error('❌ Profile creation failed:', profileError);
+        // Don't throw - the user account was created successfully
+        console.warn('User account created but profile creation failed. User can create profile manually.');
+      } else {
+        console.log('✓ Business profile created successfully!');
+      }
+
+      setSuccess(true);
     } catch (err: unknown) {
+      console.error('Registration error:', err);
       setError(err instanceof Error ? err.message : 'An error occurred during registration');
     } finally {
       setIsLoading(false);
@@ -111,7 +143,7 @@ const RegisterBusiness: React.FC = () => {
           <div style={{ fontSize: '64px', marginBottom: '1rem' }}>✅</div>
           <h2 style={{ color: '#22c55e', marginBottom: '1rem', fontSize: '2rem' }}>Registration Successful!</h2>
           <p style={{ color: '#666', lineHeight: '1.6', marginBottom: '1.5rem' }}>
-            Please check your email for a confirmation link to activate your business account and complete your company profile.
+            Please check your email for a confirmation link to activate your business account.
           </p>
           <button
             onClick={() => navigate('/login')}
@@ -170,7 +202,7 @@ const RegisterBusiness: React.FC = () => {
             margin: 0,
             lineHeight: '1.5'
           }}>
-            Register your business to start posting and discovering talent. Connect with verified professionals and streamline your hiring process.
+            Register your business to start posting jobs and discovering talent
           </p>
         </div>
 
@@ -209,7 +241,7 @@ const RegisterBusiness: React.FC = () => {
                 value={formData.companyName}
                 onChange={handleChange}
                 required
-                placeholder="Corporation"
+                placeholder="Your Company Inc."
                 style={{
                   width: '100%',
                   padding: '0.75rem',
