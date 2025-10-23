@@ -28,6 +28,10 @@ interface UserData {
 interface CandidateDetails {
   candidate_profile: CandidateProfile;
   user: UserData;
+  interests: Array<{
+    id: string;
+    name: string | null;
+  }>;
 }
 
 interface ApplicationDetailsModalProps {
@@ -74,7 +78,8 @@ const ApplicationDetailsModal: React.FC<ApplicationDetailsModalProps> = ({
             ...profileData,
             specialties: Array.isArray(profileData.specialties) 
               ? profileData.specialties[0] 
-              : profileData.specialties
+              : profileData.specialties,
+            interests: candidateDetails.interests || []
           });
           setUserData(candidateDetails.user);
 
@@ -433,6 +438,43 @@ const ApplicationDetailsModal: React.FC<ApplicationDetailsModalProps> = ({
                   </div>
                 )}
               </div>
+
+              {/* Interests - Full Width */}
+              {candidateProfile.interests && candidateProfile.interests.length > 0 && (
+                <div style={{ marginTop: '1.5rem' }}>
+                  <div style={{
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    color: '#6b7280',
+                    marginBottom: '0.5rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em'
+                  }}>
+                    Interests
+                  </div>
+                  <div style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: '0.5rem'
+                  }}>
+                    {candidateProfile.interests.map((interest) => (
+                      <span
+                        key={interest.id}
+                        style={{
+                          padding: '0.5rem 1rem',
+                          backgroundColor: '#e0f2fe',
+                          color: '#0369a1',
+                          borderRadius: '9999px',
+                          fontSize: '0.875rem',
+                          fontWeight: '500'
+                        }}
+                      >
+                        {interest.name}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Bio - Collapsible - Full Width */}
               {candidateProfile.bio && (

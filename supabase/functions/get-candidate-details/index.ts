@@ -67,6 +67,26 @@ serve(async (req) => {
       );
     }
 
+    // Fetch interests associated with the candidate
+    const { data: userInterests, error: interestsError } = await supabase
+      .from("user_interest")
+      .select(
+        `
+        interests (
+          id,
+          name
+        )
+      `
+      )
+      .eq("candidate_id", candidate_profile_id);
+
+    if (interestsError) {
+      console.error("Interests error:", interestsError);
+    }
+
+    // Extract just the interests data
+    const interests = userInterests?.map(ui => ui.interests).filter(Boolean) || [];
+
     // Fetch user data using auth.admin API
     const { data: authData, error: authError } = await supabase.auth.admin.getUserById(
       candidateProfile.user_id
@@ -95,6 +115,7 @@ serve(async (req) => {
     const result = {
       candidate_profile: candidateProfile,
       user: userData,
+      interests: interests,
     };
 
     return new Response(JSON.stringify(result), {
@@ -103,7 +124,7 @@ serve(async (req) => {
   } catch (error) {
     console.error("Error:", error);
     return new Response(
-      JSON.stringify({ error: "Internal server error", details: error.message }),
+      JSON.stringify({ error: "Internal server error", details: (error as Error).message }),
       {
         status: 500,
         headers: { ...corsHeaders(), "Content-Type": "application/json" },
