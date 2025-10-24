@@ -73,7 +73,7 @@ const JobApplicationsPage: React.FC = () => {
   };
 
   const handleBackClick = () => {
-    navigate('/recruiter-dashboard');
+    navigate(-1);
   };
 
   if (loading) {

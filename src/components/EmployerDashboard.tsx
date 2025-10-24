@@ -346,6 +346,7 @@ const EmployerDashboard: React.FC = () => {
               {jobPostings.map((job) => (
                 <div
                   key={job.id}
+                  onClick={() => window.location.hash = `/job-applications/${job.id}`}
                   style={{
                     border: '1px solid #e5e7eb',
                     borderRadius: '8px',
