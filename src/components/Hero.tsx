@@ -20,8 +20,9 @@ const Hero: React.FC = () => {
                 </h1>
                 <p>
                     We're building the first job board that's completely free
-                    for job seekers and uses verified credentials to create
-                    perfect matches. Help us validate our concept and stay
+                    for attorneies seeking a better fit. We use your values,
+                    preferences, and interests to create perfect matches between
+                    firm and attorney. Help us validate our concept and stay
                     updated on our progress.
                 </p>
 
