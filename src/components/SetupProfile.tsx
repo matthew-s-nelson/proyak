@@ -103,7 +103,12 @@ const SetupProfile: React.FC = () => {
         setIsSubmitting(true);
 
         try {
-            if (user?.app_metadata?.user_type == "individual") {
+            console.log("submitting profile with data:", {
+                user_id: user?.id,
+                user_type: user?.user_metadata?.user_type,
+                specialty_id: selectedSpecialty.id,
+            });
+            if (user?.user_metadata?.user_type == "individual") {
                 // Call edge function to create candidate profile
                 const { data, error: functionError } =
                     await supabase.functions.invoke(
@@ -133,10 +138,10 @@ const SetupProfile: React.FC = () => {
 
                 // Navigate to dashboard or home
                 navigate("/dashboard");
-            } else if (user?.app_metadata?.user_type == "business") {
+            } else if (user?.user_metadata?.user_type == "business") {
                 //Call edge function to create business profile
                 const { data, error: functionError } =
-                    await supabase.functions.invoke("update-business-profile", {
+                    await supabase.functions.invoke("clever-endpoint", {
                         body: {
                             user_id: user?.id,
                             specialty_id: selectedSpecialty.id,
