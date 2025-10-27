@@ -421,15 +421,16 @@ const RegisterBusiness: React.FC = () => {
           <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
             <p style={{ color: '#6b7280', fontSize: '14px', margin: '0 0 0.5rem 0' }}>
               Already have an account?{' '}
-              <a href="/#/login" style={{ color: '#2563eb', textDecoration: 'none', fontWeight: '600' }}>
-                Sign in
-              </a>
+              <button onClick={() => navigate('/login')} style={{ background: 'none', border: 'none', color: '#2563eb', textDecoration: 'none', fontWeight: 600, cursor: 'pointer' }}>Sign In</button>
             </p>
             <p style={{ color: '#6b7280', fontSize: '14px', margin: 0 }}>
               Want to register as an individual?{' '}
-              <a href="/#/register-individual" style={{ color: '#2563eb', textDecoration: 'none', fontWeight: '600' }}>
-                Click here
-              </a>
+              <button
+                  onClick={() => navigate('/register-individual')}
+                  style={{ background: 'none', border: 'none', color: '#2563eb', textDecoration: 'none', fontWeight: 600, cursor: 'pointer' }}
+                >
+                  Click here
+                </button>
             </p>
           </div>
         </div>

@@ -21,6 +21,7 @@ const PostJob: React.FC = () => {
   const navigate = useNavigate();
   const [showForm, setShowForm] = useState(false);
   const [businessId, setBusinessId] = useState<string | null>(null);
+  const [_companyName, setCompanyName] = useState<string>('Your Company');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -37,7 +38,7 @@ const PostJob: React.FC = () => {
     required_skills: []
   });
 
-  // Get business_id on component mount
+  // Get business_id and company name on component mount
   useEffect(() => {
     const loadProfile = async () => {
       if (!user) {
@@ -56,19 +57,36 @@ const PostJob: React.FC = () => {
         console.log('\n--- Checking recruiter_profiles table ---');
         const { data: recruiterData, error: recruiterError } = await supabase
           .from('recruiter_profiles')
-          .select('*')
-          .eq('user_id', user.id);
+          .select('business_id')
+          .eq('user_id', user.id)
+          .single();
 
         console.log('Recruiter query result:', { recruiterData, recruiterError });
 
         if (recruiterError) {
           console.error('Recruiter query error:', recruiterError);
+          console.error('Error code:', recruiterError.code);
         }
 
-        if (recruiterData && recruiterData.length > 0) {
+        if (recruiterData && recruiterData.business_id) {
           console.log('✓ Found recruiter profile!');
-          console.log('Business ID from recruiter:', recruiterData[0].business_id);
-          setBusinessId(recruiterData[0].business_id);
+          console.log('Business ID from recruiter:', recruiterData.business_id);
+          setBusinessId(recruiterData.business_id);
+          
+          // Fetch the business profile to get company name
+          const { data: businessData, error: businessError } = await supabase
+            .from('business_profiles')
+            .select('company_name')
+            .eq('id', recruiterData.business_id)
+            .single();
+          
+          if (businessError) {
+            console.error('Error fetching business name:', businessError);
+          } else if (businessData) {
+            console.log('✓ Found company name:', businessData.company_name);
+            setCompanyName(businessData.company_name);
+          }
+          
           return;
         }
 
@@ -76,8 +94,9 @@ const PostJob: React.FC = () => {
         console.log('\n--- Checking business_profiles table ---');
         const { data: businessData, error: businessError } = await supabase
           .from('business_profiles')
-          .select('*')
-          .eq('user_id', user.id);
+          .select('id, company_name')
+          .eq('user_id', user.id)
+          .single();
 
         console.log('Business query result:', { businessData, businessError });
 
@@ -85,22 +104,17 @@ const PostJob: React.FC = () => {
           console.error('Business query error:', businessError);
         }
 
-        if (businessData && businessData.length > 0) {
+        if (businessData) {
           console.log('✓ Found business profile!');
-          console.log('Business ID:', businessData[0].id);
-          setBusinessId(businessData[0].id);
+          console.log('Business ID:', businessData.id);
+          setBusinessId(businessData.id);
+          setCompanyName(businessData.company_name || 'Your Company');
           return;
         }
 
         // Neither found - show detailed error
         console.error('\n❌ NO PROFILE FOUND');
-        console.error('User is not in recruiter_profiles OR business_profiles tables');
-        console.error('This could mean:');
-        console.error('1. The profile was not created during registration');
-        console.error('2. The user_id does not match');
-        console.error('3. The tables do not exist or have different names');
-        
-        setError(`No business profile found for user. User type: ${user.user_metadata?.user_type || 'unknown'}. Check console for details.`);
+        setError(`No business profile found for user. User type: ${user.user_metadata?.user_type || 'unknown'}.`);
       } catch (err) {
         console.error('Error loading profile:', err);
         setError('An error occurred while loading your profile');
@@ -109,6 +123,8 @@ const PostJob: React.FC = () => {
 
     loadProfile();
   }, [user]);
+
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -128,7 +144,6 @@ const PostJob: React.FC = () => {
     setError(null);
 
     console.log('Submitting job with business_id:', businessId);
-    console.log('Form data:', formData);
 
     try {
       const jobData = {
@@ -146,39 +161,28 @@ const PostJob: React.FC = () => {
         status: 'active'
       };
 
-      console.log('Prepared job data:', jobData);
-
       const { data, error: insertError } = await supabase
         .from('job_postings')
         .insert(jobData)
         .select()
         .single();
 
-      console.log('Insert result:', { data, insertError });
-
-      if (insertError) {
-        console.error('Insert error details:', insertError);
-        throw insertError;
-      }
+      if (insertError) throw insertError;
 
       console.log('Job posted successfully:', data);
       setSuccess(true);
 
-      // Redirect after a short delay
       setTimeout(() => {
         const userType = user?.user_metadata?.user_type;
         if (userType === 'business') {
           navigate('/business-dashboard', { replace: true });
-          // Force a page reload to refresh the data
-          window.location.reload();
         } else if (userType === 'recruiter') {
           navigate('/recruiter-dashboard', { replace: true });
-          // Force a page reload to refresh the data
-          window.location.reload();
         } else {
           navigate('/', { replace: true });
         }
-      }, 1500); // Reduced from 2000 to 1500ms for faster redirect
+        window.location.reload();
+      }, 1500);
 
     } catch (err: unknown) {
       console.error('Error posting job:', err);
