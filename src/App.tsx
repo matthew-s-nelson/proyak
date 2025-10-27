@@ -23,6 +23,7 @@ import SetupProfile from './components/SetupProfile'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import RecruiterDashboard from './components/RecruiterDashboard'
+import JobApplicationsPage from './components/JobApplicationsPage'
 
 function HomePage() {
   return (
@@ -132,6 +133,14 @@ function AppContent() {
               element={
                 <ProtectedRoute>
                   <RecruiterDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/job-applications/:jobId" 
+              element={
+                <ProtectedRoute>
+                  <JobApplicationsPage />
                 </ProtectedRoute>
               } 
             />

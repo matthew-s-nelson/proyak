@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { User, MapPin, Briefcase, Building2, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import CandidateDetailsModal from './CandidateDetailsModal';
 
 interface CandidateProfile {
   id: string;
@@ -45,6 +46,7 @@ const EmployerDashboard: React.FC = () => {
   const [jobPostings, setJobPostings] = useState<JobPosting[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedCandidateId, setSelectedCandidateId] = useState<string | null>(null);
 
   useEffect(() => {
     if (user) {
@@ -151,6 +153,41 @@ const EmployerDashboard: React.FC = () => {
       case 'draft': return '#f59e0b';
       default: return '#6b7280';
     }
+  };
+
+  const handleCandidateClick = (candidateId: string) => {
+    setSelectedCandidateId(candidateId);
+  };
+
+  const handleContactCandidate = async (candidateId: string) => {
+    try {
+      // Fetch the candidate details to get their email
+      const { data, error } = await supabase.functions.invoke('get-candidate-details', {
+        body: {
+          candidate_profile_id: candidateId
+        }
+      });
+
+      if (error) {
+        console.error('Error fetching candidate details:', error);
+        alert('Unable to fetch candidate contact information');
+        return;
+      }
+
+      if (data && data.user && data.user.email) {
+        // Open default email client with candidate's email
+        window.location.href = `mailto:${data.user.email}`;
+      } else {
+        alert('Email address not available for this candidate');
+      }
+    } catch (err) {
+      console.error('Error:', err);
+      alert('Unable to contact candidate');
+    }
+  };
+
+  const closeCandidateModal = () => {
+    setSelectedCandidateId(null);
   };
 
   if (loading) {
@@ -346,6 +383,7 @@ const EmployerDashboard: React.FC = () => {
               {jobPostings.map((job) => (
                 <div
                   key={job.id}
+                  onClick={() => window.location.hash = `/job-applications/${job.id}`}
                   style={{
                     border: '1px solid #e5e7eb',
                     borderRadius: '8px',
@@ -518,8 +556,7 @@ const EmployerDashboard: React.FC = () => {
                     border: '1px solid #e5e7eb',
                     borderRadius: '8px',
                     padding: '1.25rem',
-                    transition: 'box-shadow 0.2s',
-                    cursor: 'pointer'
+                    transition: 'box-shadow 0.2s'
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
@@ -603,6 +640,7 @@ const EmployerDashboard: React.FC = () => {
                     gap: '0.5rem'
                   }}>
                     <button
+                      onClick={() => handleCandidateClick(candidate.id)}
                       style={{
                         flex: 1,
                         padding: '0.5rem',
@@ -612,12 +650,20 @@ const EmployerDashboard: React.FC = () => {
                         color: 'white',
                         fontSize: '0.875rem',
                         fontWeight: '600',
-                        cursor: 'pointer'
+                        cursor: 'pointer',
+                        transition: 'background 0.2s'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = '#5568d3';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = '#667eea';
                       }}
                     >
                       View Profile
                     </button>
                     <button
+                      onClick={() => handleContactCandidate(candidate.id)}
                       style={{
                         flex: 1,
                         padding: '0.5rem',
@@ -627,7 +673,14 @@ const EmployerDashboard: React.FC = () => {
                         color: '#0f2a63',
                         fontSize: '0.875rem',
                         fontWeight: '600',
-                        cursor: 'pointer'
+                        cursor: 'pointer',
+                        transition: 'background 0.2s'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = '#d1e0f7';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = '#e6eefc';
                       }}
                     >
                       Contact
@@ -656,6 +709,12 @@ const EmployerDashboard: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Candidate Details Modal */}
+      <CandidateDetailsModal 
+        candidateProfileId={selectedCandidateId}
+        onClose={closeCandidateModal}
+      />
     </section>
   );
 };
